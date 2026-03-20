@@ -149,3 +149,26 @@
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(217 95% 58% / 0.5);
 }
+
+/* Leaflet map overrides */
+.radar-map {
+  background: hsl(222 25% 8%) !important;
+}
+.radar-map .leaflet-tile-pane {
+  filter: saturate(0.3) brightness(0.6);
+}
+.radar-map .leaflet-control-attribution {
+  display: none !important;
+}
+.contact-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.contact-tooltip::before {
+  display: none !important;
+}
+.airplane-marker {
+  filter: drop-shadow(0 0 6px currentColor);
+}

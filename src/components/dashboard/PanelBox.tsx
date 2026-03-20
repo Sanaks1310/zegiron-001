@@ -8,15 +8,15 @@ interface PanelBoxProps {
 
 export function PanelBox({ title, children, className = "" }: PanelBoxProps) {
   return (
-    <div className={`border border-border panel-bg ${className}`}>
+    <div className={`border border-border rounded-md panel-bg overflow-hidden ${className}`}>
       {title && (
-        <div className="px-2 py-1 border-b border-border">
-          <span className="text-[10px] text-muted-foreground tracking-widest uppercase">
+        <div className="px-3 py-1.5 panel-header-border bg-secondary/30">
+          <span className="text-[11px] text-primary glow-blue tracking-[0.15em] uppercase font-display font-semibold">
             {title}
           </span>
         </div>
       )}
-      <div className="p-2">{children}</div>
+      <div className="p-2.5">{children}</div>
     </div>
   );
 }

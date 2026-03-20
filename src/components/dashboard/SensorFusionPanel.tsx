@@ -1,27 +1,27 @@
 import { sensorFusion } from "@/data/mockData";
 import { PanelBox } from "./PanelBox";
 
-const barColor: Record<string, string> = {
-  primary: "bg-primary",
-  success: "bg-success",
-  warning: "bg-warning",
-  accent: "bg-accent",
+const barColors: Record<string, string> = {
+  primary: "from-primary to-accent",
+  success: "from-warning to-warning",
+  warning: "from-destructive to-destructive",
+  accent: "from-accent to-primary",
 };
 
 export function SensorFusionPanel() {
   return (
     <PanelBox title="SENSOR FUSION">
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         {sensorFusion.map((s) => (
-          <div key={s.label} className="flex items-center gap-2">
-            <span className="text-[10px] text-muted-foreground w-10 text-right">{s.label}</span>
-            <div className="flex-1 h-2 bg-muted rounded-sm overflow-hidden">
+          <div key={s.label} className="flex items-center gap-2.5">
+            <span className="text-[10px] text-foreground w-10 text-right tracking-wider">{s.label}</span>
+            <div className="flex-1 h-3 bg-muted rounded overflow-hidden">
               <div
-                className={`h-full ${barColor[s.color]} rounded-sm`}
+                className={`h-full bg-gradient-to-r ${barColors[s.color]} rounded transition-all`}
                 style={{ width: `${s.value}%` }}
               />
             </div>
-            <span className="text-[9px] text-foreground w-6">{s.value}%</span>
+            <span className="text-[10px] text-primary glow-blue w-8 font-display">{s.value}%</span>
           </div>
         ))}
       </div>

@@ -4,7 +4,7 @@ import { IntelligenceFeed } from "./IntelligenceFeed";
 
 export function SidebarRight() {
   return (
-    <aside className="w-60 shrink-0 border-l border-border panel-bg flex flex-col overflow-y-auto p-1 space-y-1">
+    <aside className="w-64 shrink-0 border-l border-border panel-bg flex flex-col overflow-y-auto p-2 space-y-2">
       <SelectedTargetPanel />
       <SensorFusionPanel />
       <IntelligenceFeed />

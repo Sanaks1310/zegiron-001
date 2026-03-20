@@ -1,34 +1,34 @@
 import { statusBarItems } from "@/data/mockData";
 
 const statusColor: Record<string, string> = {
-  operational: "bg-success",
+  operational: "bg-primary",
   degraded: "bg-warning",
   fault: "bg-destructive",
 };
 
 const statusTextColor: Record<string, string> = {
-  operational: "text-success text-glow-green",
-  degraded: "text-warning text-glow-amber",
-  fault: "text-destructive text-glow-red",
+  operational: "text-primary glow-blue",
+  degraded: "text-warning glow-orange",
+  fault: "text-destructive glow-magenta",
 };
 
 export function TopStatusHeader() {
   return (
-    <header className="h-8 flex items-center justify-between border-b border-border px-3 panel-bg shrink-0">
+    <header className="h-9 flex items-center justify-between border-b border-border px-4 panel-bg shrink-0">
       <div className="flex items-center gap-6">
-        <h1 className="font-display text-lg font-bold tracking-widest text-primary text-glow-cyan">
+        <h1 className="font-display text-xl font-bold tracking-[0.2em] text-primary glow-blue">
           ZEGIRON
         </h1>
-        <span className="text-[10px] text-muted-foreground">
+        <span className="text-[10px] text-muted-foreground tracking-wide">
           MARITIME INTELLIGENCE PLATFORM v6.2.1
         </span>
-        <div className="flex items-center gap-3 ml-4">
+        <div className="flex items-center gap-4 ml-4">
           {statusBarItems.map((item, i) => (
             <div key={i} className="flex items-center gap-1.5">
               {["RADAR", "EO/IR", "AIS", "PASSIVE RF", "NODE-7"].includes(item.label) && (
-                <span className={`w-2 h-2 rounded-full ${statusColor[item.status]}`} />
+                <span className={`w-2 h-2 rounded-full ${statusColor[item.status]} ${item.status === "fault" ? "animate-pulse-glow" : ""}`} />
               )}
-              <span className={`text-[10px] uppercase ${statusTextColor[item.status]}`}>
+              <span className={`text-[10px] uppercase tracking-wider ${statusTextColor[item.status]}`}>
                 {item.label}
               </span>
             </div>
@@ -36,14 +36,16 @@ export function TopStatusHeader() {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="border border-destructive px-3 py-0.5 text-[10px] text-destructive text-glow-red font-bold tracking-wider">
-          THREAT LEVEL ELEVATED
+      <div className="flex items-center gap-5">
+        <div className="border border-destructive/60 rounded px-3 py-0.5 animate-pulse-glow box-glow-magenta">
+          <span className="text-[10px] text-destructive glow-magenta font-bold tracking-[0.15em]">
+            THREAT LEVEL ELEVATED
+          </span>
         </div>
-        <span className="text-primary text-glow-cyan text-sm font-bold tracking-wider">
+        <span className="text-primary glow-blue text-sm font-bold tracking-[0.15em] font-display">
           07:28:31Z
         </span>
-        <span className="text-muted-foreground text-[10px]">CDR WALSH</span>
+        <span className="text-foreground text-[10px] tracking-wide">CDR WALSH</span>
       </div>
     </header>
   );

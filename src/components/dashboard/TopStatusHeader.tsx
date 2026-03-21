@@ -1,4 +1,5 @@
 import { statusBarItems } from "@/data/mockData";
+import { useState, useEffect } from "react";
 
 const statusColor: Record<string, string> = {
   operational: "bg-primary",
@@ -13,6 +14,13 @@ const statusTextColor: Record<string, string> = {
 };
 
 export function TopStatusHeader() {
+  const [time, setTime] = useState(new Date());
+  useEffect(() => {
+    const id = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const utc = time.toISOString().slice(11, 19) + "Z";
+
   return (
     <header className="h-9 flex items-center justify-between border-b border-border px-4 panel-bg shrink-0">
       <div className="flex items-center gap-6">
@@ -43,7 +51,7 @@ export function TopStatusHeader() {
           </span>
         </div>
         <span className="text-primary glow-blue text-sm font-bold tracking-[0.15em] font-display">
-          07:28:31Z
+          {utc}
         </span>
         <span className="text-foreground text-[10px] tracking-wide">CDR WALSH</span>
       </div>

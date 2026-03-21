@@ -108,8 +108,18 @@ export function MainMapDisplay() {
         <span className="text-[10px] text-primary glow-blue tracking-[0.2em]">MODE: SURVEILLANCE</span>
       </motion.div>
 
+      {/* Track Timeline */}
+      <div className="absolute bottom-7 left-0 right-0 h-20 border-t border-border/50 panel-bg z-[2]">
+        <div className="px-2 pt-0.5">
+          <span className="text-[8px] text-primary glow-blue tracking-widest">TRACK HISTORY</span>
+        </div>
+        <div className="h-[calc(100%-14px)]">
+          <TrackTimeline />
+        </div>
+      </div>
+
       {/* Bottom coords */}
-      <div className="absolute bottom-0 left-0 right-0 h-7 border-t border-border panel-bg flex items-center px-3 gap-6 z-[2]">
+      <div className="absolute bottom-0 left-0 right-0 h-7 border-t border-border panel-bg flex items-center px-3 gap-6 z-[3]">
         <span className="text-[9px] text-muted-foreground">LAT 54.218°N</span>
         <span className="text-[9px] text-muted-foreground">LON 003.847°E</span>
         <span className="text-[9px] text-muted-foreground">ALT SL</span>

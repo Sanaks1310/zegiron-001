@@ -51,7 +51,7 @@ export function TopStatusHeader() {
           </span>
         </div>
         <span className="text-primary glow-blue text-sm font-bold tracking-[0.15em] font-display">
-          07:28:31Z
+          {utc}
         </span>
         <span className="text-foreground text-[10px] tracking-wide">CDR WALSH</span>
       </div>

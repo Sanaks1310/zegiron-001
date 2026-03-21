@@ -1,5 +1,6 @@
 import { mapContacts } from "@/data/mockData";
 import { StatusSelector } from "./StatusSelector";
+import { TrackTimeline } from "./TrackTimeline";
 import { useSelectedContact } from "@/context/SelectedContactContext";
 import { motion } from "framer-motion";
 

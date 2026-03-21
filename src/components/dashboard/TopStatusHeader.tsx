@@ -1,4 +1,5 @@
 import { statusBarItems } from "@/data/mockData";
+import { useState, useEffect } from "react";
 
 const statusColor: Record<string, string> = {
   operational: "bg-primary",

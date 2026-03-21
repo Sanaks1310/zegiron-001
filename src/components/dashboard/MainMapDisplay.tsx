@@ -1,5 +1,7 @@
 import { mapContacts } from "@/data/mockData";
 import { StatusSelector } from "./StatusSelector";
+import { useSelectedContact } from "@/context/SelectedContactContext";
+import { motion } from "framer-motion";
 
 const contactColor: Record<string, string> = {
   hostile: "bg-destructive",
@@ -13,7 +15,15 @@ const contactGlow: Record<string, string> = {
   friendly: "shadow-[0_0_8px_hsl(217_95%_58%/0.4)]",
 };
 
+const contactRing: Record<string, string> = {
+  hostile: "ring-destructive",
+  unknown: "ring-warning",
+  friendly: "ring-primary",
+};
+
 export function MainMapDisplay() {
+  const { selected, setSelected } = useSelectedContact();
+
   return (
     <div className="flex-1 relative overflow-hidden">
       <StatusSelector />
@@ -24,17 +34,14 @@ export function MainMapDisplay() {
       {/* Radar area */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="relative w-80 h-80">
-          {/* Electric blue range rings */}
           <div className="absolute inset-0 border border-primary/25 rounded-full" />
           <div className="absolute inset-[20%] border border-primary/20 rounded-full" />
           <div className="absolute inset-[40%] border border-primary/15 rounded-full" />
           <div className="absolute inset-[60%] border border-primary/10 rounded-full" />
 
-          {/* Cross hairs */}
           <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/10" />
           <div className="absolute top-1/2 left-0 right-0 h-px bg-primary/10" />
 
-          {/* Vibrant green sweep cone */}
           <div
             className="absolute inset-0 animate-radar-sweep"
             style={{
@@ -43,7 +50,6 @@ export function MainMapDisplay() {
             }}
           />
 
-          {/* Sweep line */}
           <div className="absolute inset-0 animate-radar-sweep origin-center">
             <div
               className="absolute left-1/2 bottom-1/2 w-1/2 h-0.5"
@@ -57,31 +63,49 @@ export function MainMapDisplay() {
       </div>
 
       {/* Contacts */}
-      {mapContacts.map((c) => (
-        <div
+      {mapContacts.map((c, i) => (
+        <motion.div
           key={c.id}
-          className="absolute flex flex-col items-center gap-1 cursor-pointer hover-glow rounded p-1 z-[2]"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3, delay: 0.1 * i }}
+          className={`absolute flex flex-col items-center gap-1 cursor-pointer hover-glow rounded p-1 z-[2] transition-all ${
+            selected.id === c.id ? `ring-2 ${contactRing[c.type]} ring-offset-1 ring-offset-background rounded-lg` : ""
+          }`}
           style={{ left: `${c.x}%`, top: `${c.y}%`, transform: "translate(-50%, -50%)" }}
+          onClick={() => setSelected(c)}
         >
-          <div className={`w-3.5 h-3.5 rounded-full ${contactColor[c.type]} ${contactGlow[c.type]}`} />
+          <div className={`w-3.5 h-3.5 rounded-full ${contactColor[c.type]} ${contactGlow[c.type]} ${
+            selected.id === c.id ? "animate-pulse" : ""
+          }`} />
           <span className="text-[9px] text-foreground whitespace-nowrap tracking-wide">
             {c.label || c.id}{c.speed ? ` · ${c.speed}` : ""}
           </span>
-        </div>
+        </motion.div>
       ))}
 
       {/* EOIR thumbnail */}
-      <div className="absolute top-4 right-[32%] border border-border rounded panel-bg p-1.5 box-glow-blue">
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="absolute top-4 right-[32%] border border-border rounded panel-bg p-1.5 box-glow-blue"
+      >
         <div className="w-28 h-16 bg-muted rounded flex items-center justify-center">
           <span className="text-[8px] text-success glow-green">EOIR-01 THERMAL · LIVE</span>
         </div>
         <div className="text-[8px] text-primary text-center mt-1 glow-blue">LOCK TRK HTL-01</div>
-      </div>
+      </motion.div>
 
       {/* Mode badge */}
-      <div className="absolute top-4 right-[18%] border border-primary/50 rounded px-4 py-1 box-glow-blue">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+        className="absolute top-4 right-[18%] border border-primary/50 rounded px-4 py-1 box-glow-blue"
+      >
         <span className="text-[10px] text-primary glow-blue tracking-[0.2em]">MODE: SURVEILLANCE</span>
-      </div>
+      </motion.div>
 
       {/* Bottom coords */}
       <div className="absolute bottom-0 left-0 right-0 h-7 border-t border-border panel-bg flex items-center px-3 gap-6 z-[2]">

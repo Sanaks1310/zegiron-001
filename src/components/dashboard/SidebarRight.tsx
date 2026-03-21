@@ -2,18 +2,39 @@ import { SelectedTargetPanel } from "./SelectedTargetPanel";
 import { SensorFusionPanel } from "./SensorFusionPanel";
 import { IntelligenceFeed } from "./IntelligenceFeed";
 import { motion } from "framer-motion";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
 
 export function SidebarRight() {
   return (
-    <motion.aside
+    <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4 }}
-      className="w-64 shrink-0 border-l border-border panel-bg flex flex-col overflow-y-auto p-2 space-y-2"
+      className="h-full border-l border-border panel-bg flex flex-col"
     >
-      <SelectedTargetPanel />
-      <SensorFusionPanel />
-      <IntelligenceFeed />
-    </motion.aside>
+      <ResizablePanelGroup direction="vertical" className="flex-1">
+        <ResizablePanel defaultSize={35} minSize={15}>
+          <div className="h-full overflow-y-auto p-2">
+            <SelectedTargetPanel />
+          </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={25} minSize={10}>
+          <div className="h-full overflow-y-auto p-2">
+            <SensorFusionPanel />
+          </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={40} minSize={15}>
+          <div className="h-full overflow-y-auto p-2">
+            <IntelligenceFeed />
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </motion.div>
   );
 }

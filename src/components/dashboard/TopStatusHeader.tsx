@@ -14,6 +14,13 @@ const statusTextColor: Record<string, string> = {
 };
 
 export function TopStatusHeader() {
+  const [time, setTime] = useState(new Date());
+  useEffect(() => {
+    const id = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const utc = time.toISOString().slice(11, 19) + "Z";
+
   return (
     <header className="h-9 flex items-center justify-between border-b border-border px-4 panel-bg shrink-0">
       <div className="flex items-center gap-6">

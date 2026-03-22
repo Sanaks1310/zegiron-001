@@ -27,16 +27,12 @@ export function MainMapDisplay() {
   const { selected, setSelected } = useSelectedContact();
 
   return (
-    <div className="flex-1 relative overflow-hidden">
+    <div className="flex-1 relative overflow-hidden bg-[length:512px_512px]" style={{
+      backgroundImage: "url(https://a.basemaps.cartocdn.com/dark_nolabels/5/15/10.png)",
+      backgroundRepeat: "repeat",
+    }}>
+      <div className="absolute inset-0 bg-background/70 z-0" />
       <StatusSelector />
-
-      {/* World map background via iframe */}
-      <iframe
-        title="map-bg"
-        src="https://www.openstreetmap.org/export/embed.html?bbox=-10,50,5,60&layer=hot"
-        className="absolute inset-0 w-full h-full z-0 opacity-20 pointer-events-none border-0 grayscale invert"
-        loading="lazy"
-      />
 
       {/* Scanline overlay */}
       <div className="absolute inset-0 scanline pointer-events-none z-[1]" />

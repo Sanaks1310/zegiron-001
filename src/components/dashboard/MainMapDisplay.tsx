@@ -1,6 +1,8 @@
 import { mapContacts } from "@/data/mockData";
 import { StatusSelector } from "./StatusSelector";
 import { TrackTimeline } from "./TrackTimeline";
+import { WorldMapSVG } from "./WorldMapSVG";
+import { FlightTrails } from "./FlightTrails";
 import { useSelectedContact } from "@/context/SelectedContactContext";
 import { motion } from "framer-motion";
 import { Plane } from "lucide-react";

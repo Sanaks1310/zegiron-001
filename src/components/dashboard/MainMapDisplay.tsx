@@ -3,9 +3,7 @@ import { StatusSelector } from "./StatusSelector";
 import { TrackTimeline } from "./TrackTimeline";
 import { useSelectedContact } from "@/context/SelectedContactContext";
 import { motion } from "framer-motion";
-import { MapContainer, TileLayer } from "react-leaflet";
 import { Plane } from "lucide-react";
-import "leaflet/dist/leaflet.css";
 
 const contactColor: Record<string, string> = {
   hostile: "text-destructive",
@@ -32,23 +30,13 @@ export function MainMapDisplay() {
     <div className="flex-1 relative overflow-hidden">
       <StatusSelector />
 
-      {/* Leaflet world map background */}
-      <div className="absolute inset-0 z-0 opacity-40">
-        <MapContainer
-          center={[54.5, -2.0]}
-          zoom={6}
-          zoomControl={false}
-          attributionControl={false}
-          dragging={false}
-          scrollWheelZoom={false}
-          doubleClickZoom={false}
-          touchZoom={false}
-          keyboard={false}
-          style={{ height: "100%", width: "100%", background: "transparent" }}
-        >
-          <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png" />
-        </MapContainer>
-      </div>
+      {/* World map background via iframe */}
+      <iframe
+        title="map-bg"
+        src="https://www.openstreetmap.org/export/embed.html?bbox=-10,50,5,60&layer=hot"
+        className="absolute inset-0 w-full h-full z-0 opacity-20 pointer-events-none border-0 grayscale invert"
+        loading="lazy"
+      />
 
       {/* Scanline overlay */}
       <div className="absolute inset-0 scanline pointer-events-none z-[1]" />

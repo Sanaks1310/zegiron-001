@@ -3,17 +3,20 @@ import { StatusSelector } from "./StatusSelector";
 import { TrackTimeline } from "./TrackTimeline";
 import { useSelectedContact } from "@/context/SelectedContactContext";
 import { motion } from "framer-motion";
+import { MapContainer, TileLayer } from "react-leaflet";
+import { Plane } from "lucide-react";
+import "leaflet/dist/leaflet.css";
 
 const contactColor: Record<string, string> = {
-  hostile: "bg-destructive",
-  unknown: "bg-warning",
-  friendly: "bg-primary",
+  hostile: "text-destructive",
+  unknown: "text-warning",
+  friendly: "text-primary",
 };
 
 const contactGlow: Record<string, string> = {
-  hostile: "shadow-[0_0_12px_hsl(338_90%_56%/0.6)]",
-  unknown: "shadow-[0_0_8px_hsl(32_95%_55%/0.5)]",
-  friendly: "shadow-[0_0_8px_hsl(217_95%_58%/0.4)]",
+  hostile: "drop-shadow-[0_0_6px_hsl(338_90%_56%/0.8)]",
+  unknown: "drop-shadow-[0_0_6px_hsl(32_95%_55%/0.7)]",
+  friendly: "drop-shadow-[0_0_6px_hsl(217_95%_58%/0.6)]",
 };
 
 const contactRing: Record<string, string> = {
@@ -29,11 +32,29 @@ export function MainMapDisplay() {
     <div className="flex-1 relative overflow-hidden">
       <StatusSelector />
 
+      {/* Leaflet world map background */}
+      <div className="absolute inset-0 z-0 opacity-40">
+        <MapContainer
+          center={[54.5, -2.0]}
+          zoom={6}
+          zoomControl={false}
+          attributionControl={false}
+          dragging={false}
+          scrollWheelZoom={false}
+          doubleClickZoom={false}
+          touchZoom={false}
+          keyboard={false}
+          style={{ height: "100%", width: "100%", background: "transparent" }}
+        >
+          <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png" />
+        </MapContainer>
+      </div>
+
       {/* Scanline overlay */}
       <div className="absolute inset-0 scanline pointer-events-none z-[1]" />
 
       {/* Radar area */}
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div className="absolute inset-0 flex items-center justify-center z-[1] pointer-events-none">
         <div className="relative w-80 h-80">
           <div className="absolute inset-0 border border-primary/25 rounded-full" />
           <div className="absolute inset-[20%] border border-primary/20 rounded-full" />
@@ -63,22 +84,26 @@ export function MainMapDisplay() {
         </div>
       </div>
 
-      {/* Contacts */}
+      {/* Contacts as airplane icons */}
       {mapContacts.map((c, i) => (
         <motion.div
           key={c.id}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, delay: 0.1 * i }}
-          className={`absolute flex flex-col items-center gap-1 cursor-pointer hover-glow rounded p-1 z-[2] transition-all ${
+          className={`absolute flex flex-col items-center gap-0.5 cursor-pointer hover-glow rounded p-1 z-[2] transition-all ${
             selected.id === c.id ? `ring-2 ${contactRing[c.type]} ring-offset-1 ring-offset-background rounded-lg` : ""
           }`}
           style={{ left: `${c.x}%`, top: `${c.y}%`, transform: "translate(-50%, -50%)" }}
           onClick={() => setSelected(c)}
         >
-          <div className={`w-3.5 h-3.5 rounded-full ${contactColor[c.type]} ${contactGlow[c.type]} ${
-            selected.id === c.id ? "animate-pulse" : ""
-          }`} />
+          <Plane
+            size={16}
+            className={`${contactColor[c.type]} ${contactGlow[c.type]} ${
+              selected.id === c.id ? "animate-pulse" : ""
+            } rotate-45`}
+            fill="currentColor"
+          />
           <span className="text-[9px] text-foreground whitespace-nowrap tracking-wide">
             {c.label || c.id}{c.speed ? ` · ${c.speed}` : ""}
           </span>
@@ -90,7 +115,7 @@ export function MainMapDisplay() {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="absolute top-4 right-[32%] border border-border rounded panel-bg p-1.5 box-glow-blue"
+        className="absolute top-4 right-[32%] border border-border rounded panel-bg p-1.5 box-glow-blue z-[2]"
       >
         <div className="w-28 h-16 bg-muted rounded flex items-center justify-center">
           <span className="text-[8px] text-success glow-green">EOIR-01 THERMAL · LIVE</span>
@@ -103,7 +128,7 @@ export function MainMapDisplay() {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
-        className="absolute top-4 right-[18%] border border-primary/50 rounded px-4 py-1 box-glow-blue"
+        className="absolute top-4 right-[18%] border border-primary/50 rounded px-4 py-1 box-glow-blue z-[2]"
       >
         <span className="text-[10px] text-primary glow-blue tracking-[0.2em]">MODE: SURVEILLANCE</span>
       </motion.div>

@@ -40,13 +40,12 @@ export function MainMapDisplay() {
         `,
         backgroundSize: '20px 20px, 20px 20px, 100px 100px, 100px 100px',
       }} />
-      {/* Coastline-like shapes */}
-      <svg className="absolute inset-0 w-full h-full z-0 opacity-20" viewBox="0 0 800 600" preserveAspectRatio="none">
-        <path d="M0,200 Q100,180 150,220 T250,200 T350,240 T450,200 T550,230 T650,190 T800,220 L800,0 L0,0 Z" fill="hsl(145 40% 25% / 0.3)" stroke="hsl(145 60% 40% / 0.2)" strokeWidth="1"/>
-        <path d="M0,350 Q80,320 160,360 T300,340 T400,370 T500,330 T600,360 T700,340 T800,360 L800,600 L0,600 Z" fill="hsl(145 40% 25% / 0.2)" stroke="hsl(145 60% 40% / 0.15)" strokeWidth="1"/>
-        <path d="M300,250 Q340,230 380,260 T440,240 Q460,260 440,280 Q420,300 380,280 T320,270 Z" fill="hsl(145 40% 25% / 0.25)" stroke="hsl(145 60% 40% / 0.2)" strokeWidth="0.5"/>
-      </svg>
+      {/* World map */}
+      <WorldMapSVG />
       <StatusSelector />
+
+      {/* Flight trails */}
+      <FlightTrails />
 
       {/* Scanline overlay */}
       <div className="absolute inset-0 scanline pointer-events-none z-[1]" />

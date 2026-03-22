@@ -72,13 +72,13 @@ export function MainMapDisplay() {
       {mapContacts.map((c, i) => (
         <motion.div
           key={c.id}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.1 * i }}
-          className={`absolute flex flex-col items-center gap-0.5 cursor-pointer hover-glow rounded p-1 z-[2] transition-all ${
+          className={`absolute flex flex-col items-center gap-0.5 cursor-pointer hover-glow rounded p-1 z-[2] transition-all -translate-x-1/2 -translate-y-1/2 ${
             selected.id === c.id ? `ring-2 ${contactRing[c.type]} ring-offset-1 ring-offset-background rounded-lg` : ""
           }`}
-          style={{ left: `${c.x}%`, top: `${c.y}%`, transform: "translate(-50%, -50%)" }}
+          style={{ left: `${c.x}%`, top: `${c.y}%` }}
           onClick={() => setSelected(c)}
         >
           <Plane

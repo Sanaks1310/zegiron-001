@@ -27,16 +27,24 @@ export function MainMapDisplay() {
   const { selected, setSelected } = useSelectedContact();
 
   return (
-    <div className="flex-1 relative overflow-hidden">
+    <div className="flex-1 relative overflow-hidden h-full bg-card">
+      {/* Map grid background */}
+      <div className="absolute inset-0 z-0" style={{
+        backgroundImage: `
+          linear-gradient(hsl(217 95% 58% / 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, hsl(217 95% 58% / 0.04) 1px, transparent 1px),
+          linear-gradient(hsl(217 95% 58% / 0.08) 1px, transparent 1px),
+          linear-gradient(90deg, hsl(217 95% 58% / 0.08) 1px, transparent 1px)
+        `,
+        backgroundSize: '20px 20px, 20px 20px, 100px 100px, 100px 100px',
+      }} />
+      {/* Coastline-like shapes */}
+      <svg className="absolute inset-0 w-full h-full z-0 opacity-20" viewBox="0 0 800 600" preserveAspectRatio="none">
+        <path d="M0,200 Q100,180 150,220 T250,200 T350,240 T450,200 T550,230 T650,190 T800,220 L800,0 L0,0 Z" fill="hsl(145 40% 25% / 0.3)" stroke="hsl(145 60% 40% / 0.2)" strokeWidth="1"/>
+        <path d="M0,350 Q80,320 160,360 T300,340 T400,370 T500,330 T600,360 T700,340 T800,360 L800,600 L0,600 Z" fill="hsl(145 40% 25% / 0.2)" stroke="hsl(145 60% 40% / 0.15)" strokeWidth="1"/>
+        <path d="M300,250 Q340,230 380,260 T440,240 Q460,260 440,280 Q420,300 380,280 T320,270 Z" fill="hsl(145 40% 25% / 0.25)" stroke="hsl(145 60% 40% / 0.2)" strokeWidth="0.5"/>
+      </svg>
       <StatusSelector />
-
-      {/* World map background via iframe */}
-      <iframe
-        title="map-bg"
-        src="https://www.openstreetmap.org/export/embed.html?bbox=-10,50,5,60&layer=hot"
-        className="absolute inset-0 w-full h-full z-0 opacity-20 pointer-events-none border-0 grayscale invert"
-        loading="lazy"
-      />
 
       {/* Scanline overlay */}
       <div className="absolute inset-0 scanline pointer-events-none z-[1]" />
@@ -76,13 +84,13 @@ export function MainMapDisplay() {
       {mapContacts.map((c, i) => (
         <motion.div
           key={c.id}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.1 * i }}
-          className={`absolute flex flex-col items-center gap-0.5 cursor-pointer hover-glow rounded p-1 z-[2] transition-all ${
+          className={`absolute flex flex-col items-center gap-0.5 cursor-pointer hover-glow rounded p-1 z-[2] transition-all -translate-x-1/2 -translate-y-1/2 ${
             selected.id === c.id ? `ring-2 ${contactRing[c.type]} ring-offset-1 ring-offset-background rounded-lg` : ""
           }`}
-          style={{ left: `${c.x}%`, top: `${c.y}%`, transform: "translate(-50%, -50%)" }}
+          style={{ left: `${c.x}%`, top: `${c.y}%` }}
           onClick={() => setSelected(c)}
         >
           <Plane

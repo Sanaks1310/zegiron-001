@@ -5,7 +5,14 @@ import { WorldMapSVG } from "./WorldMapSVG";
 import { FlightTrails } from "./FlightTrails";
 import { useSelectedContact } from "@/context/SelectedContactContext";
 import { motion } from "framer-motion";
-import { Plane } from "lucide-react";
+import { Plane, Radar, Eye, Ship, HelpCircle } from "lucide-react";
+
+// Icon per contact type
+const contactIconMap: Record<string, typeof Plane> = {
+  hostile: Plane,
+  unknown: HelpCircle,
+  friendly: Ship,
+};
 
 const contactColor: Record<string, string> = {
   hostile: "text-destructive",
@@ -40,6 +47,7 @@ export function MainMapDisplay() {
         `,
         backgroundSize: '20px 20px, 20px 20px, 100px 100px, 100px 100px',
       }} />
+
       {/* World map */}
       <WorldMapSVG />
       <StatusSelector />
@@ -50,9 +58,14 @@ export function MainMapDisplay() {
       {/* Scanline overlay */}
       <div className="absolute inset-0 scanline pointer-events-none z-[1]" />
 
-      {/* Radar area */}
+      {/* Radar area with world map clipped inside */}
       <div className="absolute inset-0 flex items-center justify-center z-[1] pointer-events-none">
-        <div className="relative w-80 h-80">
+        <div className="relative w-72 h-72">
+          {/* Clipped world map inside radar circle */}
+          <div className="absolute inset-0 rounded-full overflow-hidden">
+            <WorldMapSVG className="opacity-40" />
+          </div>
+          
           <div className="absolute inset-0 border border-primary/25 rounded-full" />
           <div className="absolute inset-[20%] border border-primary/20 rounded-full" />
           <div className="absolute inset-[40%] border border-primary/15 rounded-full" />
@@ -81,43 +94,46 @@ export function MainMapDisplay() {
         </div>
       </div>
 
-      {/* Contacts as airplane icons */}
-      {mapContacts.map((c, i) => (
-        <motion.div
-          key={c.id}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.1 * i }}
-          className={`absolute flex flex-col items-center gap-0.5 cursor-pointer hover-glow rounded p-1 z-[2] transition-all -translate-x-1/2 -translate-y-1/2 ${
-            selected.id === c.id ? `ring-2 ${contactRing[c.type]} ring-offset-1 ring-offset-background rounded-lg` : ""
-          }`}
-          style={{ left: `${c.x}%`, top: `${c.y}%` }}
-          onClick={() => setSelected(c)}
-        >
-          <Plane
-            size={16}
-            className={`${contactColor[c.type]} ${contactGlow[c.type]} ${
-              selected.id === c.id ? "animate-pulse" : ""
-            } rotate-45`}
-            fill="currentColor"
-          />
-          <span className="text-[9px] text-foreground whitespace-nowrap tracking-wide">
-            {c.label || c.id}{c.speed ? ` · ${c.speed}` : ""}
-          </span>
-        </motion.div>
-      ))}
+      {/* Contacts with type-specific icons */}
+      {mapContacts.map((c, i) => {
+        const IconComponent = contactIconMap[c.type] || Plane;
+        return (
+          <motion.div
+            key={c.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.1 * i }}
+            className={`absolute flex flex-col items-center gap-0.5 cursor-pointer hover-glow rounded p-1 z-[2] transition-all -translate-x-1/2 -translate-y-1/2 ${
+              selected.id === c.id ? `ring-2 ${contactRing[c.type]} ring-offset-1 ring-offset-background rounded-lg` : ""
+            }`}
+            style={{ left: `${c.x}%`, top: `${c.y}%` }}
+            onClick={() => setSelected(c)}
+          >
+            <IconComponent
+              size={14}
+              className={`${contactColor[c.type]} ${contactGlow[c.type]} ${
+                selected.id === c.id ? "animate-pulse" : ""
+              } ${c.type === "hostile" ? "rotate-45" : ""}`}
+              fill="currentColor"
+            />
+            <span className="text-[8px] text-foreground whitespace-nowrap tracking-wide">
+              {c.label || c.id}{c.speed ? ` · ${c.speed}` : ""}
+            </span>
+          </motion.div>
+        );
+      })}
 
       {/* EOIR thumbnail */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="absolute top-4 right-[32%] border border-border rounded panel-bg p-1.5 box-glow-blue z-[2]"
+        className="absolute top-3 right-[32%] border border-border rounded panel-bg p-1 box-glow-blue z-[2]"
       >
-        <div className="w-28 h-16 bg-muted rounded flex items-center justify-center">
-          <span className="text-[8px] text-success glow-green">EOIR-01 THERMAL · LIVE</span>
+        <div className="w-24 h-14 bg-muted rounded flex items-center justify-center">
+          <span className="text-[7px] text-success glow-green">EOIR-01 THERMAL · LIVE</span>
         </div>
-        <div className="text-[8px] text-primary text-center mt-1 glow-blue">LOCK TRK HTL-01</div>
+        <div className="text-[7px] text-primary text-center mt-0.5 glow-blue">LOCK TRK HTL-01</div>
       </motion.div>
 
       {/* Mode badge */}
@@ -125,26 +141,26 @@ export function MainMapDisplay() {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
-        className="absolute top-4 right-[18%] border border-primary/50 rounded px-4 py-1 box-glow-blue z-[2]"
+        className="absolute top-3 right-[18%] border border-primary/50 rounded px-3 py-1 box-glow-blue z-[2]"
       >
-        <span className="text-[10px] text-primary glow-blue tracking-[0.2em]">MODE: SURVEILLANCE</span>
+        <span className="text-[9px] text-primary glow-blue tracking-[0.2em]">MODE: SURVEILLANCE</span>
       </motion.div>
 
       {/* Track Timeline */}
-      <div className="absolute bottom-7 left-0 right-0 h-20 border-t border-border/50 panel-bg z-[2]">
+      <div className="absolute bottom-6 left-0 right-0 h-16 border-t border-border/50 panel-bg z-[2]">
         <div className="px-2 pt-0.5">
-          <span className="text-[8px] text-primary glow-blue tracking-widest">TRACK HISTORY</span>
+          <span className="text-[7px] text-primary glow-blue tracking-widest">TRACK HISTORY</span>
         </div>
-        <div className="h-[calc(100%-14px)]">
+        <div className="h-[calc(100%-12px)]">
           <TrackTimeline />
         </div>
       </div>
 
       {/* Bottom coords */}
-      <div className="absolute bottom-0 left-0 right-0 h-7 border-t border-border panel-bg flex items-center px-3 gap-6 z-[3]">
-        <span className="text-[9px] text-muted-foreground">LAT 54.218°N</span>
-        <span className="text-[9px] text-muted-foreground">LON 003.847°E</span>
-        <span className="text-[9px] text-muted-foreground">ALT SL</span>
+      <div className="absolute bottom-0 left-0 right-0 h-6 border-t border-border panel-bg flex items-center px-3 gap-6 z-[3]">
+        <span className="text-[8px] text-muted-foreground">LAT 54.218°N</span>
+        <span className="text-[8px] text-muted-foreground">LON 003.847°E</span>
+        <span className="text-[8px] text-muted-foreground">ALT SL</span>
       </div>
     </div>
   );

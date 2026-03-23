@@ -1,13 +1,13 @@
-import { mapContacts } from "@/data/mockData";
 import { StatusSelector } from "./StatusSelector";
 import { TrackTimeline } from "./TrackTimeline";
 import { WorldMapSVG } from "./WorldMapSVG";
 import { FlightTrails } from "./FlightTrails";
+import { ThreatRadius } from "./ThreatRadius";
 import { useSelectedContact } from "@/context/SelectedContactContext";
+import { useAnimatedContacts } from "@/hooks/useAnimatedContacts";
 import { motion } from "framer-motion";
-import { Plane, Radar, Eye, Ship, HelpCircle } from "lucide-react";
+import { Plane, Ship, HelpCircle } from "lucide-react";
 
-// Icon per contact type
 const contactIconMap: Record<string, typeof Plane> = {
   hostile: Plane,
   unknown: HelpCircle,
@@ -34,6 +34,7 @@ const contactRing: Record<string, string> = {
 
 export function MainMapDisplay() {
   const { selected, setSelected } = useSelectedContact();
+  const contacts = useAnimatedContacts();
 
   return (
     <div className="flex-1 relative overflow-hidden h-full bg-card">
@@ -52,8 +53,11 @@ export function MainMapDisplay() {
       <WorldMapSVG />
       <StatusSelector />
 
+      {/* Threat radius around hostiles */}
+      <ThreatRadius contacts={contacts} radius={5} />
+
       {/* Flight trails */}
-      <FlightTrails />
+      <FlightTrails contacts={contacts} />
 
       {/* Scanline overlay */}
       <div className="absolute inset-0 scanline pointer-events-none z-[1]" />
@@ -61,7 +65,6 @@ export function MainMapDisplay() {
       {/* Radar area with world map clipped inside */}
       <div className="absolute inset-0 flex items-center justify-center z-[1] pointer-events-none">
         <div className="relative w-72 h-72">
-          {/* Clipped world map inside radar circle */}
           <div className="absolute inset-0 rounded-full overflow-hidden">
             <WorldMapSVG className="opacity-40" />
           </div>
@@ -94,16 +97,13 @@ export function MainMapDisplay() {
         </div>
       </div>
 
-      {/* Contacts with type-specific icons */}
-      {mapContacts.map((c, i) => {
+      {/* Contacts with type-specific icons — now animated */}
+      {contacts.map((c, i) => {
         const IconComponent = contactIconMap[c.type] || Plane;
         return (
-          <motion.div
+          <div
             key={c.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3, delay: 0.1 * i }}
-            className={`absolute flex flex-col items-center gap-0.5 cursor-pointer hover-glow rounded p-1 z-[2] transition-all -translate-x-1/2 -translate-y-1/2 ${
+            className={`absolute flex flex-col items-center gap-0.5 cursor-pointer hover-glow rounded p-1 z-[2] transition-none -translate-x-1/2 -translate-y-1/2 ${
               selected.id === c.id ? `ring-2 ${contactRing[c.type]} ring-offset-1 ring-offset-background rounded-lg` : ""
             }`}
             style={{ left: `${c.x}%`, top: `${c.y}%` }}
@@ -119,7 +119,7 @@ export function MainMapDisplay() {
             <span className="text-[8px] text-foreground whitespace-nowrap tracking-wide">
               {c.label || c.id}{c.speed ? ` · ${c.speed}` : ""}
             </span>
-          </motion.div>
+          </div>
         );
       })}
 

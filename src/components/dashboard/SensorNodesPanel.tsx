@@ -1,5 +1,6 @@
 import { sensorNodes } from "@/data/mockData";
 import { PanelBox } from "./PanelBox";
+import { Radar, Eye, Ship, Radio } from "lucide-react";
 
 function StatusDot({ status }: { status: string }) {
   const colors: Record<string, string> = {
@@ -7,7 +8,7 @@ function StatusDot({ status }: { status: string }) {
     fault: "bg-destructive animate-pulse-glow",
     monitoring: "bg-primary animate-pulse-soft",
   };
-  return <span className={`w-2 h-2 rounded-full shrink-0 ${colors[status] || "bg-muted-foreground"}`} />;
+  return <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors[status] || "bg-muted-foreground"}`} />;
 }
 
 function SensorItem({
@@ -17,28 +18,28 @@ function SensorItem({
 }) {
   const isFault = status === "fault";
   return (
-    <div className="flex items-center justify-between py-1.5 border-b border-border/40 last:border-0 hover-glow rounded px-1 cursor-default">
-      <div className="flex items-center gap-2">
+    <div className="flex items-center justify-between py-1 border-b border-border/30 last:border-0 hover-glow rounded px-1 cursor-default">
+      <div className="flex items-center gap-1.5">
         <StatusDot status={status} />
         <div>
-          <span className="text-[11px] text-foreground">
+          <span className="text-[10px] text-foreground">
             {id}{label ? ` · ${label}` : ""}
           </span>
-          {coords && <div className="text-[9px] text-muted-foreground">{coords}</div>}
+          {coords && <div className="text-[8px] text-muted-foreground">{coords}</div>}
         </div>
       </div>
       <div className="text-right">
         {isFault && (
-          <span className="text-[10px] text-destructive glow-magenta font-bold">LINK FAULT</span>
+          <span className="text-[9px] text-destructive glow-magenta font-bold">FAULT</span>
         )}
         {range && !isFault && (
-          <span className="text-[10px] text-primary glow-blue">{range}</span>
+          <span className="text-[9px] text-primary glow-blue">{range}</span>
         )}
         {vessels !== undefined && (
-          <span className="text-[10px] text-warning glow-orange font-bold">{vessels} VESSELS</span>
+          <span className="text-[9px] text-warning glow-orange font-bold">{vessels}</span>
         )}
         {status === "monitoring" && (
-          <span className="text-[10px] text-primary">MONITORING</span>
+          <span className="text-[9px] text-primary">MON</span>
         )}
       </div>
     </div>
@@ -47,32 +48,32 @@ function SensorItem({
 
 export function SensorNodesPanel() {
   return (
-    <div className="space-y-2">
-      <div className="px-3 py-1.5">
-        <span className="text-[11px] text-primary glow-blue font-bold tracking-[0.15em] font-display">
+    <div className="space-y-1.5">
+      <div className="px-2 py-1">
+        <span className="text-[10px] text-primary glow-blue font-bold tracking-[0.15em] font-display">
           SENSOR NODES: <span className="text-success glow-green">12 ONLINE</span>
         </span>
       </div>
 
-      <PanelBox title="RADAR">
+      <PanelBox title="RADAR" icon={<Radar size={12} />}>
         {sensorNodes.radar.map((s) => (
           <SensorItem key={s.id} {...s} />
         ))}
       </PanelBox>
 
-      <PanelBox title="EO/IR">
+      <PanelBox title="EO/IR" icon={<Eye size={12} />}>
         {sensorNodes.eoir.map((s) => (
           <SensorItem key={s.id} {...s} />
         ))}
       </PanelBox>
 
-      <PanelBox title="AIS">
+      <PanelBox title="AIS" icon={<Ship size={12} />}>
         {sensorNodes.ais.map((s) => (
           <SensorItem key={s.id} id={s.id} label={s.label} vessels={s.vessels} status={s.status} />
         ))}
       </PanelBox>
 
-      <PanelBox title="PASSIVE-RF">
+      <PanelBox title="PASSIVE-RF" icon={<Radio size={12} />} defaultCollapsed>
         {sensorNodes.passiveRf.map((s) => (
           <SensorItem key={s.id} id={s.id} label="" coords={s.coords} status={s.status} />
         ))}

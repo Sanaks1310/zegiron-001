@@ -2,10 +2,10 @@
  * Simplified world map outline focused on the North Sea / UK / Northern Europe region
  * for a tactical radar display background.
  */
-export function WorldMapSVG() {
+export function WorldMapSVG({ className = "" }: { className?: string }) {
   return (
     <svg
-      className="absolute inset-0 w-full h-full z-0 opacity-25"
+      className={`absolute inset-0 w-full h-full z-0 opacity-25 ${className}`}
       viewBox="0 0 1000 700"
       preserveAspectRatio="xMidYMid slice"
     >
@@ -41,7 +41,6 @@ export function WorldMapSVG() {
         stroke="hsl(145 60% 45% / 0.35)"
         strokeWidth="0.8"
       />
-
       {/* Norway */}
       <path
         d="M420,20 L415,35 L410,50 L405,65 L395,80 L388,95 L385,110 L390,120 
@@ -75,7 +74,6 @@ export function WorldMapSVG() {
         stroke="hsl(145 60% 45% / 0.35)"
         strokeWidth="0.8"
       />
-
       {/* Netherlands / Belgium / France coast */}
       <path
         d="M340,175 L355,170 L370,168 L385,165 L400,162 L405,170 L400,178 
@@ -93,7 +91,6 @@ export function WorldMapSVG() {
         stroke="hsl(145 60% 45% / 0.35)"
         strokeWidth="0.8"
       />
-
       {/* Germany / Poland */}
       <path
         d="M400,165 L420,162 L445,160 L470,162 L495,165 L520,168 L540,172 
@@ -103,7 +100,6 @@ export function WorldMapSVG() {
         stroke="hsl(145 60% 45% / 0.35)"
         strokeWidth="0.8"
       />
-
       {/* Iberian Peninsula */}
       <path
         d="M180,280 L200,270 L225,265 L250,262 L270,268 L285,278 L290,295 
@@ -113,8 +109,7 @@ export function WorldMapSVG() {
         stroke="hsl(145 60% 45% / 0.35)"
         strokeWidth="0.8"
       />
-
-      {/* Italy boot shape */}
+      {/* Italy */}
       <path
         d="M420,240 L430,235 L440,240 L445,255 L448,270 L445,285 L440,300 
            L435,315 L428,325 L420,330 L415,320 L418,305 L422,290 L425,275 
@@ -123,7 +118,6 @@ export function WorldMapSVG() {
         stroke="hsl(145 60% 45% / 0.35)"
         strokeWidth="0.8"
       />
-
       {/* Iceland */}
       <path
         d="M120,30 L135,25 L152,28 L160,38 L155,50 L142,55 L128,52 L118,44 L115,35 Z"
@@ -131,7 +125,6 @@ export function WorldMapSVG() {
         stroke="hsl(145 60% 45% / 0.35)"
         strokeWidth="0.8"
       />
-
       {/* North Africa coast */}
       <path
         d="M150,380 L200,370 L260,360 L320,355 L380,352 L440,350 L500,352 

@@ -145,15 +145,6 @@ export function MainMapDisplay() {
         <span className="text-[9px] text-primary glow-blue tracking-[0.2em]">MODE: SURVEILLANCE</span>
       </motion.div>
 
-      {/* Track Timeline */}
-      <div className="absolute bottom-6 left-0 right-0 h-16 border-t border-border/50 panel-bg z-[2]">
-        <div className="px-2 pt-0.5">
-          <span className="text-[7px] text-primary glow-blue tracking-widest">TRACK HISTORY</span>
-        </div>
-        <div className="h-[calc(100%-12px)]">
-          <TrackTimeline />
-        </div>
-      </div>
 
       {/* Bottom coords */}
       <div className="absolute bottom-0 left-0 right-0 h-6 border-t border-border panel-bg flex items-center px-3 gap-6 z-[3]">

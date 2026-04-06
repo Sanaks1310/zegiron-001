@@ -1,6 +1,5 @@
 import { StatusSelector } from "./StatusSelector";
 import { WorldMapSVG } from "./WorldMapSVG";
-import { WorldMapSVG } from "./WorldMapSVG";
 import { FlightTrails } from "./FlightTrails";
 import { ThreatRadius } from "./ThreatRadius";
 import { useSelectedContact } from "@/context/SelectedContactContext";

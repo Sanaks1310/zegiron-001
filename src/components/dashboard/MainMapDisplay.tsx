@@ -1,5 +1,5 @@
 import { StatusSelector } from "./StatusSelector";
-import { TrackTimeline } from "./TrackTimeline";
+import { WorldMapSVG } from "./WorldMapSVG";
 import { WorldMapSVG } from "./WorldMapSVG";
 import { FlightTrails } from "./FlightTrails";
 import { ThreatRadius } from "./ThreatRadius";

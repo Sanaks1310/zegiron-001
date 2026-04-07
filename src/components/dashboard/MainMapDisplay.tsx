@@ -6,7 +6,7 @@ import { useSelectedContact } from "@/context/SelectedContactContext";
 import { useAnimatedContacts } from "@/hooks/useAnimatedContacts";
 import { motion } from "framer-motion";
 import { Plane, Ship, HelpCircle, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
-import worldMapImg from "@/assets/world-map.png";
+import worldMapImg from "@/assets/world-map-clean.png";
 
 const contactIconMap: Record<string, typeof Plane> = {
   hostile: Plane,

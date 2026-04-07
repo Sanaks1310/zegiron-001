@@ -56,12 +56,6 @@ export function MainMapDisplay() {
 
       <StatusSelector />
 
-      {/* Threat radius around hostiles */}
-      <ThreatRadius contacts={contacts} radius={5} />
-
-      {/* Flight trails */}
-      <FlightTrails contacts={contacts} />
-
       {/* Scanline overlay */}
       <div className="absolute inset-0 scanline pointer-events-none z-[1]" />
 
@@ -95,28 +89,60 @@ export function MainMapDisplay() {
             <text x="192" y="102" fill="hsl(145 60% 45% / 0.5)" fontSize="5" fontFamily="monospace" textAnchor="middle">E</text>
           </svg>
 
-          {/* Clipped world map image inside the circle */}
+          {/* Clipped radar content inside the circle */}
           <div className="absolute inset-0 rounded-full overflow-hidden" style={{
             boxShadow: "inset 0 0 60px hsl(145 60% 30% / 0.15), 0 0 40px hsl(145 60% 40% / 0.1)"
           }}>
-            {/* World map image background */}
-            <div className="absolute inset-0 flex items-center justify-center" style={{
+            {/* Zoomable container - map + contacts scale together */}
+            <div className="absolute inset-0" style={{
               transform: `scale(${zoom})`,
               transition: "transform 0.3s ease-out",
             }}>
+              {/* World map image background */}
               <img
                 src={worldMapImg}
                 alt="World Map"
-                className="w-[180%] h-[180%] object-cover"
-                style={{ filter: "brightness(0.7) saturate(1.2)" }}
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ filter: "brightness(0.9) saturate(1.1)" }}
                 draggable={false}
               />
+
+              {/* Contacts inside zoomable area */}
+              <div className="absolute inset-0 pointer-events-auto">
+                <ThreatRadius contacts={contacts} radius={5} />
+                <FlightTrails contacts={contacts} />
+                {contacts.map((c) => {
+                  const IconComponent = contactIconMap[c.type] || Plane;
+                  return (
+                    <div
+                      key={c.id}
+                      className={`absolute flex flex-col items-center gap-0.5 cursor-pointer hover-glow rounded p-1 transition-none -translate-x-1/2 -translate-y-1/2 ${
+                        selected.id === c.id ? `ring-2 ${contactRing[c.type]} ring-offset-1 ring-offset-background rounded-lg` : ""
+                      }`}
+                      style={{ left: `${c.x}%`, top: `${c.y}%` }}
+                      onClick={() => setSelected(c)}
+                    >
+                      <IconComponent
+                        size={14}
+                        className={`${contactColor[c.type]} ${contactGlow[c.type]} ${
+                          selected.id === c.id ? "animate-pulse" : ""
+                        } ${c.type === "hostile" ? "rotate-45" : ""}`}
+                        fill="currentColor"
+                      />
+                      <span className="text-[8px] text-foreground whitespace-nowrap tracking-wide">
+                        {c.label || c.id}{c.speed ? ` · ${c.speed}` : ""}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            {/* Green tint overlay */}
-            <div className="absolute inset-0 bg-[hsl(145_40%_20%/0.15)] mix-blend-overlay" />
-            {/* Vignette */}
-            <div className="absolute inset-0" style={{
-              background: "radial-gradient(circle, transparent 40%, hsl(145 30% 8% / 0.5) 80%, hsl(145 20% 4% / 0.8) 100%)"
+
+            {/* Green tint overlay (fixed) */}
+            <div className="absolute inset-0 bg-[hsl(145_40%_20%/0.1)] mix-blend-overlay pointer-events-none" />
+            {/* Vignette (fixed) */}
+            <div className="absolute inset-0 pointer-events-none" style={{
+              background: "radial-gradient(circle, transparent 40%, hsl(145 30% 8% / 0.4) 80%, hsl(145 20% 4% / 0.7) 100%)"
             }} />
           </div>
           
@@ -187,32 +213,6 @@ export function MainMapDisplay() {
           <RotateCcw size={12} className="text-muted-foreground" />
         </button>
       </div>
-
-      {/* Contacts with type-specific icons */}
-      {contacts.map((c) => {
-        const IconComponent = contactIconMap[c.type] || Plane;
-        return (
-          <div
-            key={c.id}
-            className={`absolute flex flex-col items-center gap-0.5 cursor-pointer hover-glow rounded p-1 z-[2] transition-none -translate-x-1/2 -translate-y-1/2 ${
-              selected.id === c.id ? `ring-2 ${contactRing[c.type]} ring-offset-1 ring-offset-background rounded-lg` : ""
-            }`}
-            style={{ left: `${c.x}%`, top: `${c.y}%` }}
-            onClick={() => setSelected(c)}
-          >
-            <IconComponent
-              size={14}
-              className={`${contactColor[c.type]} ${contactGlow[c.type]} ${
-                selected.id === c.id ? "animate-pulse" : ""
-              } ${c.type === "hostile" ? "rotate-45" : ""}`}
-              fill="currentColor"
-            />
-            <span className="text-[8px] text-foreground whitespace-nowrap tracking-wide">
-              {c.label || c.id}{c.speed ? ` · ${c.speed}` : ""}
-            </span>
-          </div>
-        );
-      })}
 
       {/* EOIR thumbnail */}
       <motion.div

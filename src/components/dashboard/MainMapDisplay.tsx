@@ -1,11 +1,12 @@
+import { useState, useCallback } from "react";
 import { StatusSelector } from "./StatusSelector";
-import { WorldMapSVG } from "./WorldMapSVG";
 import { FlightTrails } from "./FlightTrails";
 import { ThreatRadius } from "./ThreatRadius";
 import { useSelectedContact } from "@/context/SelectedContactContext";
 import { useAnimatedContacts } from "@/hooks/useAnimatedContacts";
 import { motion } from "framer-motion";
-import { Plane, Ship, HelpCircle } from "lucide-react";
+import { Plane, Ship, HelpCircle, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import worldMapImg from "@/assets/world-map.png";
 
 const contactIconMap: Record<string, typeof Plane> = {
   hostile: Plane,
@@ -34,6 +35,11 @@ const contactRing: Record<string, string> = {
 export function MainMapDisplay() {
   const { selected, setSelected } = useSelectedContact();
   const contacts = useAnimatedContacts();
+  const [zoom, setZoom] = useState(1);
+
+  const zoomIn = useCallback(() => setZoom(z => Math.min(z + 0.3, 4)), []);
+  const zoomOut = useCallback(() => setZoom(z => Math.max(z - 0.3, 0.5)), []);
+  const resetZoom = useCallback(() => setZoom(1), []);
 
   return (
     <div className="flex-1 relative overflow-hidden h-full bg-card">
@@ -48,8 +54,6 @@ export function MainMapDisplay() {
         backgroundSize: '20px 20px, 20px 20px, 100px 100px, 100px 100px',
       }} />
 
-      {/* World map */}
-      <WorldMapSVG />
       <StatusSelector />
 
       {/* Threat radius around hostiles */}
@@ -61,14 +65,13 @@ export function MainMapDisplay() {
       {/* Scanline overlay */}
       <div className="absolute inset-0 scanline pointer-events-none z-[1]" />
 
-      {/* Radar area with world map clipped inside */}
+      {/* Radar area with world map image inside */}
       <div className="absolute inset-0 flex items-center justify-center z-[1] pointer-events-none">
         <div className="relative" style={{ width: "min(85vw, 85vh, 500px)", height: "min(85vw, 85vh, 500px)" }}>
           {/* Outer decorative ring with tick marks */}
           <svg className="absolute -inset-3 w-[calc(100%+24px)] h-[calc(100%+24px)]" viewBox="0 0 200 200">
             <circle cx="100" cy="100" r="98" fill="none" stroke="hsl(145 60% 40% / 0.3)" strokeWidth="0.5" />
             <circle cx="100" cy="100" r="95" fill="none" stroke="hsl(145 60% 40% / 0.2)" strokeWidth="0.3" />
-            {/* Tick marks around the ring */}
             {Array.from({ length: 72 }).map((_, i) => {
               const angle = (i * 5 * Math.PI) / 180;
               const isMajor = i % 6 === 0;
@@ -86,24 +89,34 @@ export function MainMapDisplay() {
                 />
               );
             })}
-            {/* Cardinal direction labels */}
             <text x="100" y="12" fill="hsl(145 60% 45% / 0.5)" fontSize="5" fontFamily="monospace" textAnchor="middle">N</text>
             <text x="100" y="195" fill="hsl(145 60% 45% / 0.5)" fontSize="5" fontFamily="monospace" textAnchor="middle">S</text>
             <text x="8" y="102" fill="hsl(145 60% 45% / 0.5)" fontSize="5" fontFamily="monospace" textAnchor="middle">W</text>
             <text x="192" y="102" fill="hsl(145 60% 45% / 0.5)" fontSize="5" fontFamily="monospace" textAnchor="middle">E</text>
           </svg>
 
-          {/* Clipped world map inside the circle */}
+          {/* Clipped world map image inside the circle */}
           <div className="absolute inset-0 rounded-full overflow-hidden" style={{
             boxShadow: "inset 0 0 60px hsl(145 60% 30% / 0.15), 0 0 40px hsl(145 60% 40% / 0.1)"
           }}>
-            {/* Dark background */}
-            <div className="absolute inset-0 bg-[hsl(145_20%_5%)]" />
-            {/* Map with green tint */}
-            <WorldMapSVG className="opacity-80" />
-            {/* Green vignette overlay */}
+            {/* World map image background */}
+            <div className="absolute inset-0 flex items-center justify-center" style={{
+              transform: `scale(${zoom})`,
+              transition: "transform 0.3s ease-out",
+            }}>
+              <img
+                src={worldMapImg}
+                alt="World Map"
+                className="w-[180%] h-[180%] object-cover"
+                style={{ filter: "brightness(0.7) saturate(1.2)" }}
+                draggable={false}
+              />
+            </div>
+            {/* Green tint overlay */}
+            <div className="absolute inset-0 bg-[hsl(145_40%_20%/0.15)] mix-blend-overlay" />
+            {/* Vignette */}
             <div className="absolute inset-0" style={{
-              background: "radial-gradient(circle, transparent 40%, hsl(145 30% 8% / 0.7) 80%, hsl(145 20% 4%) 100%)"
+              background: "radial-gradient(circle, transparent 40%, hsl(145 30% 8% / 0.5) 80%, hsl(145 20% 4% / 0.8) 100%)"
             }} />
           </div>
           
@@ -116,7 +129,6 @@ export function MainMapDisplay() {
           {/* Crosshairs */}
           <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[hsl(145_60%_40%/0.12)]" />
           <div className="absolute top-1/2 left-0 right-0 h-px bg-[hsl(145_60%_40%/0.12)]" />
-          {/* Diagonal crosshairs */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-full h-px bg-[hsl(145_60%_40%/0.06)] rotate-45" />
           </div>
@@ -151,8 +163,33 @@ export function MainMapDisplay() {
         </div>
       </div>
 
-      {/* Contacts with type-specific icons — now animated */}
-      {contacts.map((c, i) => {
+      {/* Zoom controls */}
+      <div className="absolute bottom-10 right-4 flex flex-col gap-1 z-[4] pointer-events-auto">
+        <button
+          onClick={zoomIn}
+          className="w-8 h-8 rounded border border-border panel-bg flex items-center justify-center hover:bg-muted transition-colors"
+          title="Zoom In"
+        >
+          <ZoomIn size={14} className="text-primary" />
+        </button>
+        <button
+          onClick={zoomOut}
+          className="w-8 h-8 rounded border border-border panel-bg flex items-center justify-center hover:bg-muted transition-colors"
+          title="Zoom Out"
+        >
+          <ZoomOut size={14} className="text-primary" />
+        </button>
+        <button
+          onClick={resetZoom}
+          className="w-8 h-8 rounded border border-border panel-bg flex items-center justify-center hover:bg-muted transition-colors"
+          title="Reset Zoom"
+        >
+          <RotateCcw size={12} className="text-muted-foreground" />
+        </button>
+      </div>
+
+      {/* Contacts with type-specific icons */}
+      {contacts.map((c) => {
         const IconComponent = contactIconMap[c.type] || Plane;
         return (
           <div
@@ -199,7 +236,6 @@ export function MainMapDisplay() {
       >
         <span className="text-[9px] text-primary glow-blue tracking-[0.2em]">MODE: SURVEILLANCE</span>
       </motion.div>
-
 
       {/* Bottom coords */}
       <div className="absolute bottom-0 left-0 right-0 h-6 border-t border-border panel-bg flex items-center px-3 gap-6 z-[3]">

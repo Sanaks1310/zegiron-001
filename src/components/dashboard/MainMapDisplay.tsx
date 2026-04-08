@@ -61,7 +61,7 @@ export function MainMapDisplay() {
 
       {/* Radar area with world map image inside */}
       <div className="absolute inset-0 flex items-center justify-center z-[1] pointer-events-none">
-        <div className="relative" style={{ width: "min(85vw, 85vh, 500px)", height: "min(85vw, 85vh, 500px)" }}>
+        <div className="relative" style={{ width: "min(90vw, 90vh, 620px)", height: "min(90vw, 90vh, 620px)" }}>
           {/* Outer decorative ring with tick marks */}
           <svg className="absolute -inset-3 w-[calc(100%+24px)] h-[calc(100%+24px)]" viewBox="0 0 200 200">
             <circle cx="100" cy="100" r="98" fill="none" stroke="hsl(145 60% 40% / 0.3)" strokeWidth="0.5" />

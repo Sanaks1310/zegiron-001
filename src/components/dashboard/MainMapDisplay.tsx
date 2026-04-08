@@ -91,10 +91,11 @@ export function MainMapDisplay() {
 
           {/* Clipped radar content inside the circle */}
           <div className="absolute inset-0 rounded-full overflow-hidden" style={{
-            boxShadow: "inset 0 0 60px hsl(145 60% 30% / 0.15), 0 0 40px hsl(145 60% 40% / 0.1)"
+            boxShadow: "inset 0 0 60px hsl(145 60% 30% / 0.15), 0 0 40px hsl(145 60% 40% / 0.1)",
+            backgroundColor: "#000",
           }}>
             {/* Zoomable container - map + contacts scale together */}
-            <div className="absolute inset-0" style={{
+            <div className="absolute inset-0 flex items-center justify-center" style={{
               transform: `scale(${zoom})`,
               transition: "transform 0.3s ease-out",
             }}>

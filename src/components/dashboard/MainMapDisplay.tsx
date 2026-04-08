@@ -107,6 +107,27 @@ export function MainMapDisplay() {
                 draggable={false}
               />
 
+              {/* Geographic grid lines overlay */}
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 360 180" preserveAspectRatio="none">
+                {/* Latitude lines every 30° */}
+                {[30, 60, 90, 120, 150].map(y => (
+                  <line key={`lat-${y}`} x1="0" y1={y} x2="360" y2={y}
+                    stroke="hsl(145 60% 45% / 0.12)" strokeWidth="0.3" strokeDasharray="2 2" />
+                ))}
+                {/* Longitude lines every 30° */}
+                {[30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(x => (
+                  <line key={`lon-${x}`} x1={x} y1="0" x2={x} y2="180"
+                    stroke="hsl(145 60% 45% / 0.12)" strokeWidth="0.3" strokeDasharray="2 2" />
+                ))}
+                {/* Equator */}
+                <line x1="0" y1="90" x2="360" y2="90" stroke="hsl(145 60% 45% / 0.2)" strokeWidth="0.4" />
+                {/* Prime meridian */}
+                <line x1="180" y1="0" x2="180" y2="180" stroke="hsl(145 60% 45% / 0.2)" strokeWidth="0.4" />
+                {/* Tropics */}
+                <line x1="0" y1="66.5" x2="360" y2="66.5" stroke="hsl(145 60% 45% / 0.08)" strokeWidth="0.3" strokeDasharray="4 3" />
+                <line x1="0" y1="113.5" x2="360" y2="113.5" stroke="hsl(145 60% 45% / 0.08)" strokeWidth="0.3" strokeDasharray="4 3" />
+              </svg>
+
               {/* Contacts inside zoomable area */}
               <div className="absolute inset-0 pointer-events-auto">
                 <ThreatRadius contacts={contacts} radius={5} />

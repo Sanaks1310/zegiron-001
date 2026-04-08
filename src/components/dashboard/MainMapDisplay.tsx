@@ -158,10 +158,11 @@ export function MainMapDisplay() {
                   );
                 })}
               </div>
+
+              {/* Green tint overlay (scales with map) */}
+              <div className="absolute inset-0 bg-[hsl(145_40%_20%/0.1)] mix-blend-overlay pointer-events-none" />
             </div>
 
-            {/* Green tint overlay (fixed) */}
-            <div className="absolute inset-0 bg-[hsl(145_40%_20%/0.1)] mix-blend-overlay pointer-events-none" />
             {/* Vignette (fixed) */}
             <div className="absolute inset-0 pointer-events-none" style={{
               background: "radial-gradient(circle, transparent 40%, hsl(145 30% 8% / 0.4) 80%, hsl(145 20% 4% / 0.7) 100%)"

@@ -165,7 +165,7 @@ export function MainMapDisplay() {
 
             {/* Vignette (fixed) */}
             <div className="absolute inset-0 pointer-events-none" style={{
-              background: "radial-gradient(circle, transparent 40%, hsl(145 30% 8% / 0.4) 80%, hsl(145 20% 4% / 0.7) 100%)"
+              background: "radial-gradient(circle, transparent 40%, hsl(0 0% 0% / 0.4) 80%, hsl(0 0% 0% / 0.8) 100%)"
             }} />
           </div>
           

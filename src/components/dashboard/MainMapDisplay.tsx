@@ -110,15 +110,39 @@ export function MainMapDisplay() {
 
               {/* Geographic grid lines overlay */}
               <svg className="absolute inset-0 w-full h-full" viewBox="0 0 360 180" preserveAspectRatio="none">
-                {/* Latitude lines every 30° */}
-                {[30, 60, 90, 120, 150].map(y => (
-                  <line key={`lat-${y}`} x1="0" y1={y} x2="360" y2={y}
-                    stroke="hsl(145 60% 45% / 0.12)" strokeWidth="0.3" strokeDasharray="2 2" />
+                {/* Latitude lines every 30° with labels */}
+                {[
+                  { y: 30, label: "60°N" },
+                  { y: 60, label: "30°N" },
+                  { y: 90, label: "0°" },
+                  { y: 120, label: "30°S" },
+                  { y: 150, label: "60°S" },
+                ].map(({ y, label }) => (
+                  <g key={`lat-${y}`}>
+                    <line x1="0" y1={y} x2="360" y2={y}
+                      stroke="hsl(145 60% 45% / 0.12)" strokeWidth="0.3" strokeDasharray="2 2" />
+                    <text x="4" y={y - 1.5} fill="hsl(145 60% 55% / 0.5)" fontSize="4" fontFamily="monospace">{label}</text>
+                  </g>
                 ))}
-                {/* Longitude lines every 30° */}
-                {[30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(x => (
-                  <line key={`lon-${x}`} x1={x} y1="0" x2={x} y2="180"
-                    stroke="hsl(145 60% 45% / 0.12)" strokeWidth="0.3" strokeDasharray="2 2" />
+                {/* Longitude lines every 30° with labels */}
+                {[
+                  { x: 30, label: "150°W" },
+                  { x: 60, label: "120°W" },
+                  { x: 90, label: "90°W" },
+                  { x: 120, label: "60°W" },
+                  { x: 150, label: "30°W" },
+                  { x: 180, label: "0°" },
+                  { x: 210, label: "30°E" },
+                  { x: 240, label: "60°E" },
+                  { x: 270, label: "90°E" },
+                  { x: 300, label: "120°E" },
+                  { x: 330, label: "150°E" },
+                ].map(({ x, label }) => (
+                  <g key={`lon-${x}`}>
+                    <line x1={x} y1="0" x2={x} y2="180"
+                      stroke="hsl(145 60% 45% / 0.12)" strokeWidth="0.3" strokeDasharray="2 2" />
+                    <text x={x + 1} y="8" fill="hsl(145 60% 55% / 0.5)" fontSize="3.5" fontFamily="monospace">{label}</text>
+                  </g>
                 ))}
                 {/* Equator */}
                 <line x1="0" y1="90" x2="360" y2="90" stroke="hsl(145 60% 45% / 0.2)" strokeWidth="0.4" />

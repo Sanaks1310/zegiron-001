@@ -158,56 +158,56 @@ export function MainMapDisplay() {
                   );
                 })}
               </div>
+
+              {/* Green tint overlay (scales with map) */}
+              <div className="absolute inset-0 bg-[hsl(145_40%_20%/0.1)] mix-blend-overlay pointer-events-none" />
             </div>
 
-            {/* Green tint overlay (fixed) */}
-            <div className="absolute inset-0 bg-[hsl(145_40%_20%/0.1)] mix-blend-overlay pointer-events-none" />
             {/* Vignette (fixed) */}
             <div className="absolute inset-0 pointer-events-none" style={{
-              background: "radial-gradient(circle, transparent 40%, hsl(145 30% 8% / 0.4) 80%, hsl(145 20% 4% / 0.7) 100%)"
+              background: "radial-gradient(circle, transparent 40%, hsl(0 0% 0% / 0.4) 80%, hsl(0 0% 0% / 0.8) 100%)"
             }} />
-          </div>
-          
-          {/* Range rings */}
-          <div className="absolute inset-0 border-2 border-[hsl(145_60%_40%/0.3)] rounded-full" />
-          <div className="absolute inset-[20%] border border-[hsl(145_60%_40%/0.2)] rounded-full" />
-          <div className="absolute inset-[40%] border border-[hsl(145_60%_40%/0.15)] rounded-full" />
-          <div className="absolute inset-[60%] border border-[hsl(145_60%_40%/0.1)] rounded-full" />
+            {/* Range rings (fixed, inside clip) */}
+            <div className="absolute inset-0 border-2 border-[hsl(145_60%_40%/0.3)] rounded-full pointer-events-none" />
+            <div className="absolute inset-[20%] border border-[hsl(145_60%_40%/0.2)] rounded-full pointer-events-none" />
+            <div className="absolute inset-[40%] border border-[hsl(145_60%_40%/0.15)] rounded-full pointer-events-none" />
+            <div className="absolute inset-[60%] border border-[hsl(145_60%_40%/0.1)] rounded-full pointer-events-none" />
 
-          {/* Crosshairs */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[hsl(145_60%_40%/0.12)]" />
-          <div className="absolute top-1/2 left-0 right-0 h-px bg-[hsl(145_60%_40%/0.12)]" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-full h-px bg-[hsl(145_60%_40%/0.06)] rotate-45" />
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-full h-px bg-[hsl(145_60%_40%/0.06)] -rotate-45" />
-          </div>
+            {/* Crosshairs (fixed, inside clip) */}
+            <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[hsl(145_60%_40%/0.12)] pointer-events-none" />
+            <div className="absolute top-1/2 left-0 right-0 h-px bg-[hsl(145_60%_40%/0.12)] pointer-events-none" />
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-full h-px bg-[hsl(145_60%_40%/0.06)] rotate-45" />
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-full h-px bg-[hsl(145_60%_40%/0.06)] -rotate-45" />
+            </div>
 
-          {/* Radar sweep */}
-          <div
-            className="absolute inset-0 animate-radar-sweep"
-            style={{
-              background: "conic-gradient(from 0deg, hsl(145 85% 50% / 0.25) 0deg, hsl(145 85% 50% / 0.08) 25deg, transparent 45deg, transparent 360deg)",
-              borderRadius: "50%",
-            }}
-          />
-
-          {/* Sweep line */}
-          <div className="absolute inset-0 animate-radar-sweep origin-center">
+            {/* Radar sweep (fixed, inside clip) */}
             <div
-              className="absolute left-1/2 bottom-1/2 w-1/2 h-0.5"
+              className="absolute inset-0 animate-radar-sweep pointer-events-none"
               style={{
-                background: "linear-gradient(90deg, hsl(145 85% 50% / 0.9), transparent)",
-                transformOrigin: "left center",
+                background: "conic-gradient(from 0deg, hsl(145 85% 50% / 0.25) 0deg, hsl(145 85% 50% / 0.08) 25deg, transparent 45deg, transparent 360deg)",
+                borderRadius: "50%",
               }}
             />
-          </div>
 
-          {/* Center dot */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[hsl(145_60%_45%/0.6)]" style={{
-            boxShadow: "0 0 8px hsl(145 60% 45% / 0.4)"
-          }} />
+            {/* Sweep line (fixed, inside clip) */}
+            <div className="absolute inset-0 animate-radar-sweep origin-center pointer-events-none">
+              <div
+                className="absolute left-1/2 bottom-1/2 w-1/2 h-0.5"
+                style={{
+                  background: "linear-gradient(90deg, hsl(145 85% 50% / 0.9), transparent)",
+                  transformOrigin: "left center",
+                }}
+              />
+            </div>
+
+            {/* Center dot (fixed, inside clip) */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[hsl(145_60%_45%/0.6)] pointer-events-none" style={{
+              boxShadow: "0 0 8px hsl(145 60% 45% / 0.4)"
+            }} />
+          </div>
         </div>
       </div>
 

@@ -72,6 +72,16 @@ export function MainMapDisplay() {
     isPanning.current = false;
   }, []);
 
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.15 : 0.15;
+    setZoom(z => {
+      const next = Math.max(0.5, Math.min(4, z + delta));
+      if (next <= 1) setPan({ x: 0, y: 0 });
+      return next;
+    });
+  }, []);
+
   return (
     <div className="flex-1 relative overflow-hidden h-full bg-card">
       {/* Map grid background */}

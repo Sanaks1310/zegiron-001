@@ -146,6 +146,7 @@ export function MainMapDisplay() {
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
+              onWheel={handleWheel}
               onPointerCancel={handlePointerUp}
             >
               {/* World map image background */}

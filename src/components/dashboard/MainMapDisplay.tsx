@@ -42,7 +42,11 @@ export function MainMapDisplay() {
   const panOrigin = useRef({ x: 0, y: 0 });
 
   const zoomIn = useCallback(() => setZoom(z => Math.min(z + 0.3, 4)), []);
-  const zoomOut = useCallback(() => setZoom(z => Math.max(z - 0.3, 0.5)), []);
+  const zoomOut = useCallback(() => setZoom(z => {
+    const next = Math.max(z - 0.3, 0.5);
+    if (next <= 1) setPan({ x: 0, y: 0 });
+    return next;
+  }), []);
   const resetZoom = useCallback(() => { setZoom(1); setPan({ x: 0, y: 0 }); }, []);
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {

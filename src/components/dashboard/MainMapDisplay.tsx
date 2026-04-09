@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { StatusSelector } from "./StatusSelector";
 import { FlightTrails } from "./FlightTrails";
 import { ThreatRadius } from "./ThreatRadius";

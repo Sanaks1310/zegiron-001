@@ -36,10 +36,37 @@ export function MainMapDisplay() {
   const { selected, setSelected } = useSelectedContact();
   const contacts = useAnimatedContacts();
   const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const isPanning = useRef(false);
+  const panStart = useRef({ x: 0, y: 0 });
+  const panOrigin = useRef({ x: 0, y: 0 });
 
   const zoomIn = useCallback(() => setZoom(z => Math.min(z + 0.3, 4)), []);
   const zoomOut = useCallback(() => setZoom(z => Math.max(z - 0.3, 0.5)), []);
-  const resetZoom = useCallback(() => setZoom(1), []);
+  const resetZoom = useCallback(() => { setZoom(1); setPan({ x: 0, y: 0 }); }, []);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    if (zoom <= 1) return;
+    isPanning.current = true;
+    panStart.current = { x: e.clientX, y: e.clientY };
+    panOrigin.current = { ...pan };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }, [zoom, pan]);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!isPanning.current) return;
+    const dx = e.clientX - panStart.current.x;
+    const dy = e.clientY - panStart.current.y;
+    const maxPan = (zoom - 1) * 150;
+    setPan({
+      x: Math.max(-maxPan, Math.min(maxPan, panOrigin.current.x + dx)),
+      y: Math.max(-maxPan, Math.min(maxPan, panOrigin.current.y + dy)),
+    });
+  }, [zoom]);
+
+  const handlePointerUp = useCallback(() => {
+    isPanning.current = false;
+  }, []);
 
   return (
     <div className="flex-1 relative overflow-hidden h-full bg-card">

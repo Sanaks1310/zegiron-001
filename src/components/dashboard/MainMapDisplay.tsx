@@ -122,10 +122,18 @@ export function MainMapDisplay() {
             backgroundColor: "#000",
           }}>
             {/* Zoomable container - map + contacts scale together */}
-            <div className="absolute inset-0 flex items-center justify-center" style={{
-              transform: `scale(${zoom})`,
-              transition: "transform 0.3s ease-out",
-            }}>
+            <div
+              className="absolute inset-0 flex items-center justify-center"
+              style={{
+                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                transition: isPanning.current ? "none" : "transform 0.3s ease-out",
+                cursor: zoom > 1 ? (isPanning.current ? "grabbing" : "grab") : "default",
+              }}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+            >
               {/* World map image background */}
               <img
                 src={worldMapImg}

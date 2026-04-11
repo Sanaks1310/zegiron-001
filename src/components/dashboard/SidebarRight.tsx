@@ -1,3 +1,4 @@
+import { SensorNodesPanel } from "./SensorNodesPanel";
 import { SelectedTargetPanel } from "./SelectedTargetPanel";
 import { SensorFusionPanel } from "./SensorFusionPanel";
 import { IntelligenceFeed } from "./IntelligenceFeed";
@@ -17,19 +18,25 @@ export function SidebarRight() {
       className="h-full border-l border-border panel-bg flex flex-col"
     >
       <ResizablePanelGroup direction="vertical" className="flex-1">
-        <ResizablePanel defaultSize={35} minSize={15}>
+        <ResizablePanel defaultSize={25} minSize={10}>
+          <div className="h-full overflow-y-auto p-2">
+            <SensorNodesPanel />
+          </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={30} minSize={15}>
           <div className="h-full overflow-y-auto p-2">
             <SelectedTargetPanel />
           </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={25} minSize={10}>
+        <ResizablePanel defaultSize={20} minSize={10}>
           <div className="h-full overflow-y-auto p-2">
             <SensorFusionPanel />
           </div>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={40} minSize={15}>
+        <ResizablePanel defaultSize={25} minSize={10}>
           <div className="h-full overflow-y-auto p-2">
             <IntelligenceFeed />
           </div>

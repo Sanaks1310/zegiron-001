@@ -325,7 +325,8 @@ export function MainMapDisplay() {
       </div>
 
       {/* Zoom controls */}
-      <div className="absolute bottom-10 right-4 flex flex-col gap-1 z-[4] pointer-events-auto">
+      <div className="absolute bottom-10 right-4 flex flex-col gap-1 z-[4] pointer-events-auto items-center">
+        <span className="text-[10px] font-mono text-primary mb-0.5">{zoom.toFixed(1)}x</span>
         <button
           onClick={zoomIn}
           className="w-8 h-8 rounded border border-border panel-bg flex items-center justify-center hover:bg-muted transition-colors"

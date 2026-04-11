@@ -35,6 +35,7 @@ const contactRing: Record<string, string> = {
 
 export function MainMapDisplay() {
   const { selected, setSelected } = useSelectedContact();
+  const { isVisible } = useDashboardLayout();
   const contacts = useAnimatedContacts();
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -207,9 +208,8 @@ export function MainMapDisplay() {
 
               {/* Contacts inside zoomable area */}
               <div className="absolute inset-0 pointer-events-auto">
-                <ThreatRadius contacts={contacts} radius={5} />
-                <FlightTrails contacts={contacts} />
-                {contacts.map((c) => {
+                {isVisible("threat-zones") && <ThreatRadius contacts={contacts} radius={5} />}
+                {isVisible("flight-trails") && <FlightTrails contacts={contacts} />}
                   const IconComponent = contactIconMap[c.type] || Plane;
                   return (
                     <div

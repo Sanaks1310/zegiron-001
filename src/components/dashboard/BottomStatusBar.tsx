@@ -1,14 +1,16 @@
 import { SpectrogramBar } from "./SpectrogramBar";
+import { useDashboardLayout } from "@/context/DashboardLayoutContext";
 
 export function BottomStatusBar() {
+  const { isVisible } = useDashboardLayout();
+
   return (
     <div className="shrink-0 border-t border-border panel-bg flex flex-col">
-      {/* Spectrogram */}
-      <div className="h-12 border-b border-border/50">
-        <SpectrogramBar />
-      </div>
-
-      {/* Status line */}
+      {isVisible("spectrogram") && (
+        <div className="h-12 border-b border-border/50">
+          <SpectrogramBar />
+        </div>
+      )}
       <div className="h-6 flex items-center px-3 gap-6">
         <span className="text-[9px] text-success glow-green">● FUSION ENGINE ONLINE</span>
         <span className="text-[9px] text-muted-foreground">LATENCY 23ms</span>

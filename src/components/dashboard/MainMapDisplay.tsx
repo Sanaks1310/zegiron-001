@@ -202,45 +202,7 @@ export function MainMapDisplay() {
                 <line x1="0" y1="66.5" x2="360" y2="66.5" stroke="hsl(145 60% 45% / 0.08)" strokeWidth="0.3" strokeDasharray="4 3" />
                 <line x1="0" y1="113.5" x2="360" y2="113.5" stroke="hsl(145 60% 45% / 0.08)" strokeWidth="0.3" strokeDasharray="4 3" />
 
-                {/* Country labels - positioned at approximate map centers (lon+180, 90-lat) */}
-                {[
-                  { name: "USA", x: 97, y: 52 },
-                  { name: "CANADA", x: 100, y: 32 },
-                  { name: "BRAZIL", x: 137, y: 100 },
-                  { name: "ARGENTINA", x: 122, y: 125 },
-                  { name: "RUSSIA", x: 280, y: 30 },
-                  { name: "CHINA", x: 285, y: 55 },
-                  { name: "INDIA", x: 260, y: 70 },
-                  { name: "AUSTRALIA", x: 312, y: 117 },
-                  { name: "JAPAN", x: 320, y: 54 },
-                  { name: "UK", x: 180, y: 38 },
-                  { name: "FRANCE", x: 182, y: 44 },
-                  { name: "GERMANY", x: 190, y: 40 },
-                  { name: "EGYPT", x: 211, y: 64 },
-                  { name: "S. AFRICA", x: 207, y: 120 },
-                  { name: "IRAN", x: 233, y: 58 },
-                  { name: "SAUDI ARABIA", x: 225, y: 66 },
-                  { name: "INDONESIA", x: 297, y: 93 },
-                  { name: "MEXICO", x: 82, y: 67 },
-                  { name: "PAKISTAN", x: 249, y: 60 },
-                  { name: "TURKEY", x: 215, y: 50 },
-                  { name: "NIGERIA", x: 188, y: 80 },
-                  { name: "ALASKA", x: 33, y: 26 },
-                ].map(({ name, x, y }) => (
-                  <text
-                    key={name}
-                    x={x}
-                    y={y}
-                    fill="hsl(145 60% 60% / 0.35)"
-                    fontSize="3"
-                    fontFamily="monospace"
-                    textAnchor="middle"
-                    style={{ letterSpacing: "0.5px" }}
-                  >
-                    {name}
-                  </text>
-                ))}
-              </svg>
+
 
               {/* Contacts inside zoomable area */}
               <div className="absolute inset-0 pointer-events-auto">

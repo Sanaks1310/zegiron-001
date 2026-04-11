@@ -201,7 +201,7 @@ export function MainMapDisplay() {
                 {/* Tropics */}
                 <line x1="0" y1="66.5" x2="360" y2="66.5" stroke="hsl(145 60% 45% / 0.08)" strokeWidth="0.3" strokeDasharray="4 3" />
                 <line x1="0" y1="113.5" x2="360" y2="113.5" stroke="hsl(145 60% 45% / 0.08)" strokeWidth="0.3" strokeDasharray="4 3" />
-
+              </svg>
 
 
               {/* Contacts inside zoomable area */}

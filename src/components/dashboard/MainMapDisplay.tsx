@@ -210,6 +210,7 @@ export function MainMapDisplay() {
               <div className="absolute inset-0 pointer-events-auto">
                 {isVisible("threat-zones") && <ThreatRadius contacts={contacts} radius={5} />}
                 {isVisible("flight-trails") && <FlightTrails contacts={contacts} />}
+                {contacts.map((c) => {
                   const IconComponent = contactIconMap[c.type] || Plane;
                   return (
                     <div

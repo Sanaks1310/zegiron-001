@@ -17,7 +17,7 @@ export function SidebarRight() {
       transition={{ duration: 0.4 }}
       className="h-full border-l border-border panel-bg flex flex-col"
     >
-      <ResizablePanelGroup direction="vertical" className="flex-1">
+      <ResizablePanelGroup direction="vertical" className="flex-1" autoSaveId="sidebar-right-v2">
         <ResizablePanel defaultSize={25} minSize={10}>
           <div className="h-full overflow-y-auto p-2">
             <SensorNodesPanel />

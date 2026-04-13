@@ -1,7 +1,7 @@
 import { TopStatusHeader } from "./TopStatusHeader";
 import { MainMapDisplay } from "./MainMapDisplay";
 import { BottomStatusBar } from "./BottomStatusBar";
-import { SpectrogramBar } from "./SpectrogramBar";
+
 import { LayoutSettingsPanel } from "./LayoutSettingsPanel";
 import { FloatingPanels } from "./FloatingPanels";
 import { SelectedContactProvider } from "@/context/SelectedContactContext";

@@ -314,28 +314,6 @@ export function MainMapDisplay() {
         </button>
       </div>
 
-      {/* EOIR thumbnail */}
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-        className="absolute top-3 right-[32%] border border-border rounded panel-bg p-1 box-glow-blue z-[2]"
-      >
-        <div className="w-24 h-14 bg-muted rounded flex items-center justify-center">
-          <span className="text-[7px] text-success glow-green">EOIR-01 THERMAL · LIVE</span>
-        </div>
-        <div className="text-[7px] text-primary text-center mt-0.5 glow-blue">LOCK TRK HTL-01</div>
-      </motion.div>
-
-      {/* Mode badge */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.2 }}
-        className="absolute top-3 right-[18%] border border-primary/50 rounded px-3 py-1 box-glow-blue z-[2]"
-      >
-        <span className="text-[9px] text-primary glow-blue tracking-[0.2em]">MODE: SURVEILLANCE</span>
-      </motion.div>
 
       {/* Bottom coords */}
       <div className="absolute bottom-0 left-0 right-0 h-6 border-t border-border panel-bg flex items-center px-3 gap-6 z-[3]">

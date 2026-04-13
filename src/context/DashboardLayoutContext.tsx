@@ -12,18 +12,20 @@ const defaultComponents: DashboardComponent[] = [
   // Layout (fixed)
   { id: "top-header", label: "Top Header", group: "layout", visible: true, order: 0 },
   { id: "bottom-status", label: "Bottom Status Bar", group: "layout", visible: true, order: 1 },
-  { id: "spectrogram", label: "Spectrogram", group: "layout", visible: true, order: 2 },
-  { id: "radar-map", label: "Radar Map", group: "layout", visible: true, order: 3 },
+  { id: "radar-map", label: "Radar Map", group: "layout", visible: true, order: 2 },
 
   // Map overlays
   { id: "flight-trails", label: "Flight Trails", group: "map-overlay", visible: true, order: 0 },
   { id: "threat-zones", label: "Threat Zones", group: "map-overlay", visible: true, order: 1 },
 
-  // Sidebar panels (now floating, start hidden)
-  { id: "sensor-nodes", label: "Sensor Nodes", group: "sidebar", visible: false, order: 0 },
-  { id: "selected-target", label: "Selected Target", group: "sidebar", visible: false, order: 1 },
-  { id: "sensor-fusion", label: "Sensor Fusion", group: "sidebar", visible: false, order: 2 },
-  { id: "intel-feed", label: "Intelligence Feed", group: "sidebar", visible: false, order: 3 },
+  // Floating panels
+  { id: "spectrogram", label: "Spectrogram", group: "sidebar", visible: false, order: 0 },
+  { id: "mode-badge", label: "Mode: Surveillance", group: "sidebar", visible: false, order: 1 },
+  { id: "eoir-thumbnail", label: "EOIR / Lock TRK", group: "sidebar", visible: false, order: 2 },
+  { id: "sensor-nodes", label: "Sensor Nodes", group: "sidebar", visible: false, order: 3 },
+  { id: "selected-target", label: "Selected Target", group: "sidebar", visible: false, order: 4 },
+  { id: "sensor-fusion", label: "Sensor Fusion", group: "sidebar", visible: false, order: 5 },
+  { id: "intel-feed", label: "Intelligence Feed", group: "sidebar", visible: false, order: 6 },
 ];
 
 interface DashboardLayoutContextType {

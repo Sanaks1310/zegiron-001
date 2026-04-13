@@ -17,11 +17,6 @@ function DashboardContent() {
         <MainMapDisplay />
         <FloatingPanels />
       </div>
-      {isVisible("spectrogram") && (
-        <div className="h-10 border-t border-border shrink-0">
-          <SpectrogramBar />
-        </div>
-      )}
       {isVisible("bottom-status") && <BottomStatusBar />}
       <LayoutSettingsPanel />
     </div>

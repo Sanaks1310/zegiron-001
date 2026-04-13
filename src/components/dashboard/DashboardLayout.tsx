@@ -1,7 +1,7 @@
 import { TopStatusHeader } from "./TopStatusHeader";
 import { MainMapDisplay } from "./MainMapDisplay";
 import { BottomStatusBar } from "./BottomStatusBar";
-import { SpectrogramBar } from "./SpectrogramBar";
+
 import { LayoutSettingsPanel } from "./LayoutSettingsPanel";
 import { FloatingPanels } from "./FloatingPanels";
 import { SelectedContactProvider } from "@/context/SelectedContactContext";
@@ -17,11 +17,6 @@ function DashboardContent() {
         <MainMapDisplay />
         <FloatingPanels />
       </div>
-      {isVisible("spectrogram") && (
-        <div className="h-10 border-t border-border shrink-0">
-          <SpectrogramBar />
-        </div>
-      )}
       {isVisible("bottom-status") && <BottomStatusBar />}
       <LayoutSettingsPanel />
     </div>

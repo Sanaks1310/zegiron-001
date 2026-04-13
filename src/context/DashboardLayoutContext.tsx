@@ -9,10 +9,10 @@ export interface DashboardComponent {
 }
 
 const defaultComponents: DashboardComponent[] = [
-  // Layout
-  { id: "top-header", label: "Top Header", group: "layout", visible: true, order: 0 },
-  { id: "bottom-status", label: "Bottom Status Bar", group: "layout", visible: true, order: 1 },
-  { id: "spectrogram", label: "Spectrogram", group: "layout", visible: true, order: 2 },
+  // Layout (now floating, start hidden)
+  { id: "top-header", label: "Top Header", group: "layout", visible: false, order: 0 },
+  { id: "bottom-status", label: "Bottom Status Bar", group: "layout", visible: false, order: 1 },
+  { id: "spectrogram", label: "Spectrogram", group: "layout", visible: false, order: 2 },
   { id: "radar-map", label: "Radar Map", group: "layout", visible: true, order: 3 },
 
   // Map overlays

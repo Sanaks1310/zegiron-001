@@ -85,7 +85,7 @@ export function MainMapDisplay() {
   }, []);
 
   return (
-    <div className="flex-1 relative overflow-hidden h-full bg-card">
+    <div className="absolute inset-0 overflow-hidden bg-card">
       {/* Map grid background */}
       <div className="absolute inset-0 z-0" style={{
         backgroundImage: `

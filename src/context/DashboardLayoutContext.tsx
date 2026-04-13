@@ -9,21 +9,21 @@ export interface DashboardComponent {
 }
 
 const defaultComponents: DashboardComponent[] = [
-  // Layout
-  { id: "top-header", label: "Top Header", group: "layout", visible: true, order: 0 },
-  { id: "bottom-status", label: "Bottom Status Bar", group: "layout", visible: true, order: 1 },
-  { id: "spectrogram", label: "Spectrogram", group: "layout", visible: true, order: 2 },
+  // Layout (now floating, start hidden)
+  { id: "top-header", label: "Top Header", group: "layout", visible: false, order: 0 },
+  { id: "bottom-status", label: "Bottom Status Bar", group: "layout", visible: false, order: 1 },
+  { id: "spectrogram", label: "Spectrogram", group: "layout", visible: false, order: 2 },
   { id: "radar-map", label: "Radar Map", group: "layout", visible: true, order: 3 },
 
   // Map overlays
   { id: "flight-trails", label: "Flight Trails", group: "map-overlay", visible: true, order: 0 },
   { id: "threat-zones", label: "Threat Zones", group: "map-overlay", visible: true, order: 1 },
 
-  // Sidebar panels
-  { id: "sensor-nodes", label: "Sensor Nodes", group: "sidebar", visible: true, order: 0 },
-  { id: "selected-target", label: "Selected Target", group: "sidebar", visible: true, order: 1 },
-  { id: "sensor-fusion", label: "Sensor Fusion", group: "sidebar", visible: true, order: 2 },
-  { id: "intel-feed", label: "Intelligence Feed", group: "sidebar", visible: true, order: 3 },
+  // Sidebar panels (now floating, start hidden)
+  { id: "sensor-nodes", label: "Sensor Nodes", group: "sidebar", visible: false, order: 0 },
+  { id: "selected-target", label: "Selected Target", group: "sidebar", visible: false, order: 1 },
+  { id: "sensor-fusion", label: "Sensor Fusion", group: "sidebar", visible: false, order: 2 },
+  { id: "intel-feed", label: "Intelligence Feed", group: "sidebar", visible: false, order: 3 },
 ];
 
 interface DashboardLayoutContextType {
@@ -32,12 +32,19 @@ interface DashboardLayoutContextType {
   isVisible: (id: string) => boolean;
   reorderSidebar: (fromIndex: number, toIndex: number) => void;
   getSidebarPanels: () => DashboardComponent[];
+  panelPositions: Record<string, { x: number; y: number }>;
+  updatePanelPosition: (id: string, pos: { x: number; y: number }) => void;
 }
 
 const DashboardLayoutContext = createContext<DashboardLayoutContextType | null>(null);
 
 export function DashboardLayoutProvider({ children }: { children: React.ReactNode }) {
   const [components, setComponents] = useState<DashboardComponent[]>(defaultComponents);
+  const [panelPositions, setPanelPositions] = useState<Record<string, { x: number; y: number }>>({});
+
+  const updatePanelPosition = useCallback((id: string, pos: { x: number; y: number }) => {
+    setPanelPositions(prev => ({ ...prev, [id]: pos }));
+  }, []);
 
   const toggleVisibility = useCallback((id: string) => {
     setComponents(prev => prev.map(c => c.id === id ? { ...c, visible: !c.visible } : c));
@@ -66,7 +73,7 @@ export function DashboardLayoutProvider({ children }: { children: React.ReactNod
   }, [components]);
 
   return (
-    <DashboardLayoutContext.Provider value={{ components, toggleVisibility, isVisible, reorderSidebar, getSidebarPanels }}>
+    <DashboardLayoutContext.Provider value={{ components, toggleVisibility, isVisible, reorderSidebar, getSidebarPanels, panelPositions, updatePanelPosition }}>
       {children}
     </DashboardLayoutContext.Provider>
   );

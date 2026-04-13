@@ -19,11 +19,11 @@ const defaultComponents: DashboardComponent[] = [
   { id: "flight-trails", label: "Flight Trails", group: "map-overlay", visible: true, order: 0 },
   { id: "threat-zones", label: "Threat Zones", group: "map-overlay", visible: true, order: 1 },
 
-  // Sidebar panels
-  { id: "sensor-nodes", label: "Sensor Nodes", group: "sidebar", visible: true, order: 0 },
-  { id: "selected-target", label: "Selected Target", group: "sidebar", visible: true, order: 1 },
-  { id: "sensor-fusion", label: "Sensor Fusion", group: "sidebar", visible: true, order: 2 },
-  { id: "intel-feed", label: "Intelligence Feed", group: "sidebar", visible: true, order: 3 },
+  // Sidebar panels (now floating, start hidden)
+  { id: "sensor-nodes", label: "Sensor Nodes", group: "sidebar", visible: false, order: 0 },
+  { id: "selected-target", label: "Selected Target", group: "sidebar", visible: false, order: 1 },
+  { id: "sensor-fusion", label: "Sensor Fusion", group: "sidebar", visible: false, order: 2 },
+  { id: "intel-feed", label: "Intelligence Feed", group: "sidebar", visible: false, order: 3 },
 ];
 
 interface DashboardLayoutContextType {

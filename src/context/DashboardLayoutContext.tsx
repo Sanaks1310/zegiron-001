@@ -32,12 +32,19 @@ interface DashboardLayoutContextType {
   isVisible: (id: string) => boolean;
   reorderSidebar: (fromIndex: number, toIndex: number) => void;
   getSidebarPanels: () => DashboardComponent[];
+  panelPositions: Record<string, { x: number; y: number }>;
+  updatePanelPosition: (id: string, pos: { x: number; y: number }) => void;
 }
 
 const DashboardLayoutContext = createContext<DashboardLayoutContextType | null>(null);
 
 export function DashboardLayoutProvider({ children }: { children: React.ReactNode }) {
   const [components, setComponents] = useState<DashboardComponent[]>(defaultComponents);
+  const [panelPositions, setPanelPositions] = useState<Record<string, { x: number; y: number }>>({});
+
+  const updatePanelPosition = useCallback((id: string, pos: { x: number; y: number }) => {
+    setPanelPositions(prev => ({ ...prev, [id]: pos }));
+  }, []);
 
   const toggleVisibility = useCallback((id: string) => {
     setComponents(prev => prev.map(c => c.id === id ? { ...c, visible: !c.visible } : c));
@@ -66,7 +73,7 @@ export function DashboardLayoutProvider({ children }: { children: React.ReactNod
   }, [components]);
 
   return (
-    <DashboardLayoutContext.Provider value={{ components, toggleVisibility, isVisible, reorderSidebar, getSidebarPanels }}>
+    <DashboardLayoutContext.Provider value={{ components, toggleVisibility, isVisible, reorderSidebar, getSidebarPanels, panelPositions, updatePanelPosition }}>
       {children}
     </DashboardLayoutContext.Provider>
   );

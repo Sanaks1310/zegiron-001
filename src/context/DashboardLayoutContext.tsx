@@ -19,7 +19,7 @@ const defaultComponents: DashboardComponent[] = [
   { id: "threat-zones", label: "Threat Zones", group: "map-overlay", visible: true, order: 1 },
 
   // Floating panels
-  { id: "spectrogram", label: "Spectrogram", group: "sidebar", visible: false, order: 0 },
+  
   { id: "mode-badge", label: "Mode: Surveillance", group: "sidebar", visible: false, order: 1 },
   { id: "eoir-thumbnail", label: "EOIR / Lock TRK", group: "sidebar", visible: false, order: 2 },
   { id: "sensor-nodes", label: "Sensor Nodes", group: "sidebar", visible: false, order: 3 },

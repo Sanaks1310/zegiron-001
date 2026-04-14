@@ -4,7 +4,6 @@ import { SensorNodesPanel } from "./SensorNodesPanel";
 import { SelectedTargetPanel } from "./SelectedTargetPanel";
 import { SensorFusionPanel } from "./SensorFusionPanel";
 import { IntelligenceFeed } from "./IntelligenceFeed";
-import { SpectrogramBar } from "./SpectrogramBar";
 
 function ModeBadge() {
   return (
@@ -26,7 +25,6 @@ function EOIRThumbnail() {
 }
 
 const floatingPanels: { id: string; title: string; component: React.FC; defaultPos: { x: number; y: number } }[] = [
-  { id: "spectrogram", title: "SPECTROGRAM", component: SpectrogramBar, defaultPos: { x: 20, y: 380 } },
   { id: "mode-badge", title: "MODE", component: ModeBadge, defaultPos: { x: 300, y: 20 } },
   { id: "eoir-thumbnail", title: "EOIR / LOCK TRK", component: EOIRThumbnail, defaultPos: { x: 450, y: 20 } },
   { id: "sensor-nodes", title: "SENSOR NODES", component: SensorNodesPanel, defaultPos: { x: 550, y: 20 } },

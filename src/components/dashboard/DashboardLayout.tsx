@@ -8,6 +8,8 @@ import { FloatingPanels } from "./FloatingPanels";
 import { SelectedContactProvider } from "@/context/SelectedContactContext";
 import { DashboardLayoutProvider, useDashboardLayout } from "@/context/DashboardLayoutContext";
 
+import { SensorNodesProvider } from "@/context/SensorNodesContext";
+
 function DashboardContent() {
   const { isVisible } = useDashboardLayout();
 
@@ -31,8 +33,11 @@ export function DashboardLayout() {
   return (
     <SelectedContactProvider>
       <DashboardLayoutProvider>
-        <DashboardContent />
+        <SensorNodesProvider>
+          <DashboardContent />
+        </SensorNodesProvider>
       </DashboardLayoutProvider>
     </SelectedContactProvider>
   );
 }
+

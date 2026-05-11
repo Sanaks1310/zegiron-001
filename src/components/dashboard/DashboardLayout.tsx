@@ -19,6 +19,7 @@ function DashboardContent() {
       {isVisible("top-header") && <TopStatusHeader />}
       <div className="flex-1 min-h-0 relative">
         <MainMapDisplay />
+        <MapLegend />
         <FloatingPanels />
       </div>
       <div className="h-10 shrink-0 border-t border-border bg-card/80">

@@ -5,6 +5,7 @@ import { SpectrogramBar } from "./SpectrogramBar";
 
 import { LayoutSettingsPanel } from "./LayoutSettingsPanel";
 import { FloatingPanels } from "./FloatingPanels";
+import { MapLegend } from "./MapLegend";
 import { SelectedContactProvider } from "@/context/SelectedContactContext";
 import { DashboardLayoutProvider, useDashboardLayout } from "@/context/DashboardLayoutContext";
 

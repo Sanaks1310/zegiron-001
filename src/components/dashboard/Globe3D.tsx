@@ -81,7 +81,7 @@ export function Globe3D() {
     [points]
   );
 
-  // Initial camera + controls
+  // Initial camera + controls + external zoom events
   useEffect(() => {
     const g = globeRef.current;
     if (!g) return;
@@ -90,6 +90,20 @@ export function Globe3D() {
     controls.autoRotate = true;
     controls.autoRotateSpeed = 0.35;
     controls.enableDamping = true;
+
+    const onZoom = (e: Event) => {
+      const dir = (e as CustomEvent).detail as "in" | "out" | "reset";
+      const pov = g.pointOfView();
+      if (dir === "reset") {
+        g.pointOfView({ lat: 30, lng: 5, altitude: 2.2 }, 600);
+      } else {
+        const factor = dir === "in" ? 0.7 : 1.4;
+        const next = Math.max(0.6, Math.min(4, (pov.altitude || 2.2) * factor));
+        g.pointOfView({ ...pov, altitude: next }, 400);
+      }
+    };
+    window.addEventListener("globe-zoom", onZoom);
+    return () => window.removeEventListener("globe-zoom", onZoom);
   }, []);
 
   // Custom globe material (dark tactical look)

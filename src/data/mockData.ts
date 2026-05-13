@@ -1,21 +1,21 @@
 export const sensorNodes = {
   radar: [
-    { id: "RADAR-01", label: "COASTAL", coords: "54.3°N 003.6°S", range: "250km", status: "operational" as const },
+    { id: "RADAR-01", label: "COASTAL",    coords: "54.3°N 003.6°E", range: "250km", status: "operational" as const },
     { id: "RADAR-02", label: "LONG RANGE", coords: "54.1°N 003.1°W", range: "400km", status: "operational" as const },
-    { id: "RADAR-03", label: "AIRBORNE", coords: "55.2°N 001.9°W", range: "", status: "fault" as const },
+    { id: "RADAR-03", label: "AIRBORNE",   coords: "55.2°N 001.9°W", range: "",      status: "fault" as const },
   ],
   eoir: [
-    { id: "EOIR-01", label: "THERMAL", coords: "54.5°N 003.5°S", range: "32km", status: "operational" as const },
-    { id: "EOIR-02", label: "MWIR", coords: "54.3°N 001.5°S", range: "28km", status: "operational" as const },
+    { id: "EOIR-01", label: "THERMAL", coords: "54.5°N 003.5°E", range: "32km", status: "operational" as const },
+    { id: "EOIR-02", label: "MWIR",    coords: "54.3°N 001.5°E", range: "28km", status: "operational" as const },
   ],
   ais: [
-    { id: "AIS-COASTAL", label: "SECTOR-BRAVO", vessels: 147, status: "operational" as const },
-    { id: "AIS-OFFSHORE", label: "SECTOR-CHARLIE", vessels: 89, status: "operational" as const },
+    { id: "AIS-COASTAL",  label: "SECTOR-BRAVO",   coords: "53.9°N 002.4°E", vessels: 147, status: "operational" as const },
+    { id: "AIS-OFFSHORE", label: "SECTOR-CHARLIE", coords: "55.6°N 004.2°E", vessels: 89,  status: "operational" as const },
   ],
   passiveRf: [
-    { id: "RF-NODE-ALPHA", coords: "55.1°N 001.5°S", status: "monitoring" as const },
+    { id: "RF-NODE-ALPHA", coords: "55.1°N 001.5°E", status: "monitoring" as const },
     { id: "RF-NODE-BRAVO", coords: "54.7°N 002.2°W", status: "monitoring" as const },
-    { id: "RF-NODE-GAMMA", coords: "54.3°N 001.9°S", status: "monitoring" as const },
+    { id: "RF-NODE-GAMMA", coords: "54.3°N 001.9°E", status: "monitoring" as const },
   ],
 };
 

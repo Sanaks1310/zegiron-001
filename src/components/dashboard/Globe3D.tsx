@@ -23,10 +23,10 @@ function parseCoords(coords?: string): { lat: number; lng: number } | null {
 /* --------------------------- sensor visual style -------------------------- */
 
 const CATEGORY_STYLE: Record<SensorCategory, { color: string; label: string; size: number }> = {
-  radar:     { color: "#3da9fc", label: "RADAR",   size: 0.55 },
-  eoir:      { color: "#3df0a7", label: "EO/IR",   size: 0.45 },
-  ais:       { color: "#f0a93d", label: "AIS",     size: 0.5  },
-  passiveRf: { color: "#d83df0", label: "PASS-RF", size: 0.4  },
+  radar:     { color: "#3da9fc", label: "RADAR",   size: 1.2 },
+  eoir:      { color: "#3df0a7", label: "EO/IR",   size: 1.0 },
+  ais:       { color: "#f0a93d", label: "AIS",     size: 1.1 },
+  passiveRf: { color: "#d83df0", label: "PASS-RF", size: 0.9 },
 };
 
 interface PointDatum {
@@ -138,7 +138,7 @@ export function Globe3D() {
   useEffect(() => {
     const g = globeRef.current;
     if (!g) return;
-    g.pointOfView({ lat: 30, lng: 5, altitude: 2.2 }, 0);
+    g.pointOfView({ lat: 54.5, lng: 1.5, altitude: 1.4 }, 0);
     const controls: any = g.controls();
     controls.autoRotate = false; // off so users can read labels
     controls.enableDamping = true;
@@ -169,7 +169,7 @@ export function Globe3D() {
       const dir = (e as CustomEvent).detail as "in" | "out" | "reset";
       const pov = g.pointOfView();
       if (dir === "reset") {
-        g.pointOfView({ lat: 30, lng: 5, altitude: 2.2 }, 600);
+        g.pointOfView({ lat: 54.5, lng: 1.5, altitude: 1.4 }, 600);
       } else {
         const factor = dir === "in" ? 0.65 : 1.5;
         const next = Math.max(0.08, Math.min(4, (pov.altitude || 2.2) * factor));
@@ -222,9 +222,27 @@ export function Globe3D() {
         pointsData={points}
         pointLat="lat"
         pointLng="lng"
-        pointAltitude={0.02}
+        pointAltitude={0.04}
         pointRadius="size"
         pointColor="color"
+        pointResolution={16}
+        /* HTML labels stuck to each sensor */
+        htmlElementsData={points}
+        htmlLat={(d: any) => d.lat}
+        htmlLng={(d: any) => d.lng}
+        htmlAltitude={0.05}
+        htmlElement={(d: any) => {
+          const el = document.createElement("div");
+          const cat = CATEGORY_STYLE[d.category as SensorCategory];
+          el.innerHTML = `
+            <div style="transform:translate(-50%,-130%);pointer-events:none;font-family:ui-monospace,monospace;font-size:10px;line-height:1.1;white-space:nowrap;">
+              <div style="display:flex;align-items:center;gap:4px;background:rgba(8,16,28,0.85);border:1px solid ${d.color};padding:2px 6px;border-radius:3px;color:${d.color};font-weight:700;letter-spacing:0.08em;box-shadow:0 0 8px ${d.color}55;">
+                <span style="width:6px;height:6px;border-radius:9999px;background:${d.color};box-shadow:0 0 6px ${d.color};"></span>
+                ${cat.label} · <span style="color:#cfe6ff;font-weight:600;">${d.id}</span>
+              </div>
+            </div>`;
+          return el;
+        }}
         pointLabel={(d: any) =>
           `<div style="background:rgba(8,16,28,0.92);border:1px solid ${d.color};padding:6px 8px;border-radius:4px;font-family:ui-monospace,monospace;font-size:11px;color:#cfe6ff;">
             <div style="color:${d.color};font-weight:700;letter-spacing:0.08em">${CATEGORY_STYLE[d.category as SensorCategory].label}</div>

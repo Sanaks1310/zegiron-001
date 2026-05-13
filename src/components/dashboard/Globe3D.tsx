@@ -1,12 +1,10 @@
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, useState } from "react";
 import Globe, { GlobeMethods } from "react-globe.gl";
 import * as THREE from "three";
 import { useSensorNodes, SensorCategory, SensorEntry } from "@/context/SensorNodesContext";
 
-/**
- * Parse coords like "54.3°N 003.6°E" -> { lat, lng }.
- * Tolerant of S/W (negative) and inconsistencies in mock data.
- */
+/* ----------------------------- coord helpers ----------------------------- */
+
 function parseCoords(coords?: string): { lat: number; lng: number } | null {
   if (!coords) return null;
   const parts = coords.match(/(-?\d+(?:\.\d+)?)\s*°?\s*([NSEW])?/gi);
@@ -22,6 +20,8 @@ function parseCoords(coords?: string): { lat: number; lng: number } | null {
   return { lat: toNum(parts[0], true), lng: toNum(parts[1], false) };
 }
 
+/* --------------------------- sensor visual style -------------------------- */
+
 const CATEGORY_STYLE: Record<SensorCategory, { color: string; label: string; size: number }> = {
   radar:     { color: "#3da9fc", label: "RADAR",   size: 0.55 },
   eoir:      { color: "#3df0a7", label: "EO/IR",   size: 0.45 },
@@ -30,20 +30,79 @@ const CATEGORY_STYLE: Record<SensorCategory, { color: string; label: string; siz
 };
 
 interface PointDatum {
-  lat: number;
-  lng: number;
-  size: number;
-  color: string;
-  category: SensorCategory;
-  id: string;
-  label?: string;
-  status: string;
-  range?: string;
+  lat: number; lng: number; size: number; color: string;
+  category: SensorCategory; id: string; label?: string;
+  status: string; range?: string;
 }
+
+/* -------------------------- slippy-tile streaming ------------------------- */
+/**
+ * Compute Web-Mercator slippy tiles visible around a (lat,lng) at given zoom.
+ * Each tile is described as a lat/lng/width/height polygon for react-globe.gl
+ * `tilesData`. We use Google hybrid (satellite + roads + place names).
+ */
+interface Tile {
+  key: string;
+  x: number; y: number; z: number;
+  lat: number; lng: number; // tile center
+  width: number; height: number; // size in degrees
+  url: string;
+}
+
+const TILE_URL = (x: number, y: number, z: number) =>
+  // Google hybrid: satellite imagery with labels & roads (lyrs=y)
+  `https://mt${(x + y) % 4}.google.com/vt/lyrs=y&x=${x}&y=${y}&z=${z}`;
+
+function altitudeToZoom(alt: number): number {
+  // Map camera altitude (Earth radii) → tile zoom level
+  if (alt > 2.5) return 2;
+  if (alt > 1.6) return 3;
+  if (alt > 1.0) return 4;
+  if (alt > 0.6) return 5;
+  if (alt > 0.35) return 6;
+  if (alt > 0.2) return 7;
+  if (alt > 0.1) return 8;
+  return 9;
+}
+
+function tilesAround(centerLat: number, centerLng: number, zoom: number, radius = 3): Tile[] {
+  const n = 2 ** zoom;
+  const cx = Math.floor(((centerLng + 180) / 360) * n);
+  const latRad = Math.max(-1.4844, Math.min(1.4844, (centerLat * Math.PI) / 180));
+  const cy = Math.floor(
+    ((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * n
+  );
+  const r = Math.min(radius, Math.ceil(n / 2));
+  const tiles: Tile[] = [];
+  for (let dx = -r; dx <= r; dx++) {
+    for (let dy = -r; dy <= r; dy++) {
+      const x = ((cx + dx) % n + n) % n;
+      const y = cy + dy;
+      if (y < 0 || y >= n) continue;
+      const lng1 = (x / n) * 360 - 180;
+      const lng2 = ((x + 1) / n) * 360 - 180;
+      const lat1 = (Math.atan(Math.sinh(Math.PI * (1 - (2 * y) / n))) * 180) / Math.PI;
+      const lat2 = (Math.atan(Math.sinh(Math.PI * (1 - (2 * (y + 1)) / n))) * 180) / Math.PI;
+      tiles.push({
+        key: `${zoom}/${x}/${y}`,
+        x, y, z: zoom,
+        lat: (lat1 + lat2) / 2,
+        lng: (lng1 + lng2) / 2,
+        width: lng2 - lng1,
+        height: lat1 - lat2,
+        url: TILE_URL(x, y, zoom),
+      });
+    }
+  }
+  return tiles;
+}
+
+/* --------------------------------- Globe --------------------------------- */
 
 export function Globe3D() {
   const globeRef = useRef<GlobeMethods>();
   const { nodes } = useSensorNodes();
+  const [tiles, setTiles] = useState<Tile[]>([]);
 
   const points = useMemo<PointDatum[]>(() => {
     const out: PointDatum[] = [];
@@ -53,15 +112,10 @@ export function Globe3D() {
         const c = parseCoords(s.coords);
         if (!c) return;
         out.push({
-          lat: c.lat,
-          lng: c.lng,
-          size: style.size,
+          lat: c.lat, lng: c.lng, size: style.size,
           color: s.status === "fault" ? "#f0436b" : style.color,
-          category: cat,
-          id: s.id,
-          label: s.label,
-          status: s.status,
-          range: s.range,
+          category: cat, id: s.id, label: s.label,
+          status: s.status, range: s.range,
         });
       });
     });
@@ -71,8 +125,7 @@ export function Globe3D() {
   const rings = useMemo(
     () =>
       points.map((p) => ({
-        lat: p.lat,
-        lng: p.lng,
+        lat: p.lat, lng: p.lng,
         maxR: p.category === "radar" ? 6 : 3,
         propagationSpeed: 2,
         repeatPeriod: p.status === "fault" ? 800 : 1800,
@@ -81,15 +134,36 @@ export function Globe3D() {
     [points]
   );
 
-  // Initial camera + controls + external zoom events
+  // Camera controls + tile streaming based on POV
   useEffect(() => {
     const g = globeRef.current;
     if (!g) return;
     g.pointOfView({ lat: 30, lng: 5, altitude: 2.2 }, 0);
     const controls: any = g.controls();
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.35;
+    controls.autoRotate = false; // off so users can read labels
     controls.enableDamping = true;
+    controls.minDistance = 110;
+    controls.maxDistance = 800;
+
+    let lastKey = "";
+    const refreshTiles = () => {
+      const pov = g.pointOfView();
+      const z = altitudeToZoom(pov.altitude);
+      // Wider tile radius when zoomed in to fill the screen
+      const radius = z <= 3 ? 2 : z <= 5 ? 3 : 4;
+      const key = `${z}|${Math.round(pov.lat)}|${Math.round(pov.lng)}|${radius}`;
+      if (key === lastKey) return;
+      lastKey = key;
+      setTiles(tilesAround(pov.lat, pov.lng, z, radius));
+    };
+    refreshTiles();
+
+    let raf = 0;
+    const onChange = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(refreshTiles);
+    };
+    controls.addEventListener("change", onChange);
 
     const onZoom = (e: Event) => {
       const dir = (e as CustomEvent).detail as "in" | "out" | "reset";
@@ -97,24 +171,27 @@ export function Globe3D() {
       if (dir === "reset") {
         g.pointOfView({ lat: 30, lng: 5, altitude: 2.2 }, 600);
       } else {
-        const factor = dir === "in" ? 0.7 : 1.4;
-        const next = Math.max(0.6, Math.min(4, (pov.altitude || 2.2) * factor));
+        const factor = dir === "in" ? 0.65 : 1.5;
+        const next = Math.max(0.08, Math.min(4, (pov.altitude || 2.2) * factor));
         g.pointOfView({ ...pov, altitude: next }, 400);
       }
     };
     window.addEventListener("globe-zoom", onZoom);
-    return () => window.removeEventListener("globe-zoom", onZoom);
+    return () => {
+      window.removeEventListener("globe-zoom", onZoom);
+      controls.removeEventListener("change", onChange);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
-  // Custom globe material (dark tactical look)
+  // Dark base material (visible only until tiles load on top)
   const globeMaterial = useMemo(() => {
-    const mat = new THREE.MeshPhongMaterial({
+    return new THREE.MeshPhongMaterial({
       color: new THREE.Color("#0a1628"),
       emissive: new THREE.Color("#0a2540"),
-      emissiveIntensity: 0.25,
-      shininess: 8,
+      emissiveIntensity: 0.2,
+      shininess: 4,
     });
-    return mat;
   }, []);
 
   return (
@@ -126,12 +203,22 @@ export function Globe3D() {
         backgroundColor="rgba(0,0,0,0)"
         showAtmosphere
         atmosphereColor="#3da9fc"
-        atmosphereAltitude={0.18}
+        atmosphereAltitude={0.16}
         globeMaterial={globeMaterial}
-        // Equirectangular dark earth + topology
-        globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
-        bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
-        // Sensor points
+        /* HD streaming tiles (Google hybrid: satellite + place names) */
+        tilesData={tiles}
+        tileLat={(d: any) => d.lat}
+        tileLng={(d: any) => d.lng}
+        tileWidth={(d: any) => d.width}
+        tileHeight={(d: any) => d.height}
+        tileUseGlobeProjection={true}
+        tileMaterial={(d: any) => {
+          const tex = new THREE.TextureLoader().load(d.url);
+          tex.colorSpace = (THREE as any).SRGBColorSpace ?? tex.colorSpace;
+          tex.anisotropy = 8;
+          return new THREE.MeshBasicMaterial({ map: tex, transparent: true });
+        }}
+        /* Sensor points */
         pointsData={points}
         pointLat="lat"
         pointLng="lng"
@@ -146,7 +233,7 @@ export function Globe3D() {
             <div style="opacity:0.6">${d.lat.toFixed(2)}°, ${d.lng.toFixed(2)}°</div>
           </div>`
         }
-        // Pulse rings
+        /* Pulse rings */
         ringsData={rings}
         ringColor={(r: any) => () => r.color}
         ringMaxRadius="maxR"

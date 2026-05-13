@@ -138,7 +138,7 @@ export function Globe3D() {
   useEffect(() => {
     const g = globeRef.current;
     if (!g) return;
-    g.pointOfView({ lat: 30, lng: 5, altitude: 2.2 }, 0);
+    g.pointOfView({ lat: 54.5, lng: 1.5, altitude: 1.4 }, 0);
     const controls: any = g.controls();
     controls.autoRotate = false; // off so users can read labels
     controls.enableDamping = true;

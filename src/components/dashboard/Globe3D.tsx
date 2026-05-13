@@ -23,10 +23,10 @@ function parseCoords(coords?: string): { lat: number; lng: number } | null {
 /* --------------------------- sensor visual style -------------------------- */
 
 const CATEGORY_STYLE: Record<SensorCategory, { color: string; label: string; size: number }> = {
-  radar:     { color: "#3da9fc", label: "RADAR",   size: 0.55 },
-  eoir:      { color: "#3df0a7", label: "EO/IR",   size: 0.45 },
-  ais:       { color: "#f0a93d", label: "AIS",     size: 0.5  },
-  passiveRf: { color: "#d83df0", label: "PASS-RF", size: 0.4  },
+  radar:     { color: "#3da9fc", label: "RADAR",   size: 1.2 },
+  eoir:      { color: "#3df0a7", label: "EO/IR",   size: 1.0 },
+  ais:       { color: "#f0a93d", label: "AIS",     size: 1.1 },
+  passiveRf: { color: "#d83df0", label: "PASS-RF", size: 0.9 },
 };
 
 interface PointDatum {

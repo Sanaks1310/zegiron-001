@@ -222,9 +222,27 @@ export function Globe3D() {
         pointsData={points}
         pointLat="lat"
         pointLng="lng"
-        pointAltitude={0.02}
+        pointAltitude={0.04}
         pointRadius="size"
         pointColor="color"
+        pointResolution={16}
+        /* HTML labels stuck to each sensor */
+        htmlElementsData={points}
+        htmlLat={(d: any) => d.lat}
+        htmlLng={(d: any) => d.lng}
+        htmlAltitude={0.05}
+        htmlElement={(d: any) => {
+          const el = document.createElement("div");
+          const cat = CATEGORY_STYLE[d.category as SensorCategory];
+          el.innerHTML = `
+            <div style="transform:translate(-50%,-130%);pointer-events:none;font-family:ui-monospace,monospace;font-size:10px;line-height:1.1;white-space:nowrap;">
+              <div style="display:flex;align-items:center;gap:4px;background:rgba(8,16,28,0.85);border:1px solid ${d.color};padding:2px 6px;border-radius:3px;color:${d.color};font-weight:700;letter-spacing:0.08em;box-shadow:0 0 8px ${d.color}55;">
+                <span style="width:6px;height:6px;border-radius:9999px;background:${d.color};box-shadow:0 0 6px ${d.color};"></span>
+                ${cat.label} · <span style="color:#cfe6ff;font-weight:600;">${d.id}</span>
+              </div>
+            </div>`;
+          return el;
+        }}
         pointLabel={(d: any) =>
           `<div style="background:rgba(8,16,28,0.92);border:1px solid ${d.color};padding:6px 8px;border-radius:4px;font-family:ui-monospace,monospace;font-size:11px;color:#cfe6ff;">
             <div style="color:${d.color};font-weight:700;letter-spacing:0.08em">${CATEGORY_STYLE[d.category as SensorCategory].label}</div>

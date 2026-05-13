@@ -169,7 +169,7 @@ export function Globe3D() {
       const dir = (e as CustomEvent).detail as "in" | "out" | "reset";
       const pov = g.pointOfView();
       if (dir === "reset") {
-        g.pointOfView({ lat: 30, lng: 5, altitude: 2.2 }, 600);
+        g.pointOfView({ lat: 54.5, lng: 1.5, altitude: 1.4 }, 600);
       } else {
         const factor = dir === "in" ? 0.65 : 1.5;
         const next = Math.max(0.08, Math.min(4, (pov.altitude || 2.2) * factor));

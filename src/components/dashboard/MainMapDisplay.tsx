@@ -30,6 +30,7 @@ export function MainMapDisplay() {
       <div className="absolute inset-0 scanline pointer-events-none z-[1]" />
 
       <StatusSelector />
+      <GlobeLayerToggle />
 
       {/* Vignette */}
       <div className="absolute inset-0 pointer-events-none z-[2]" style={{

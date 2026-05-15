@@ -239,6 +239,15 @@ export function Globe3D() {
         pointRadius="size"
         pointColor="color"
         pointResolution={16}
+        onPointClick={(d: any) => {
+          setSelectedSensor({
+            category: d.category, id: d.id, label: d.label,
+            coords: `${d.lat.toFixed(2)}°, ${d.lng.toFixed(2)}°`,
+            range: d.range, status: d.status,
+          });
+          const g = globeRef.current;
+          if (g) g.pointOfView({ lat: d.lat, lng: d.lng, altitude: Math.max(0.4, g.pointOfView().altitude) }, 700);
+        }}
         /* HTML labels stuck to each sensor */
         htmlElementsData={points}
         htmlLat={(d: any) => d.lat}
@@ -249,7 +258,7 @@ export function Globe3D() {
           const cat = CATEGORY_STYLE[d.category as SensorCategory];
           const svg = ICON_SVG[d.category as SensorCategory];
           el.innerHTML = `
-            <div style="transform:translate(-50%,-100%);pointer-events:none;font-family:ui-monospace,monospace;font-size:9px;line-height:1;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px;">
+            <div style="transform:translate(-50%,-100%);cursor:pointer;font-family:ui-monospace,monospace;font-size:9px;line-height:1;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px;">
               <div style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9999px;background:rgba(8,16,28,0.92);border:1.5px solid ${d.color};color:${d.color};box-shadow:0 0 10px ${d.color}88, inset 0 0 6px ${d.color}44;">
                 ${svg}
               </div>
@@ -257,6 +266,14 @@ export function Globe3D() {
                 ${cat.label}·<span style="color:#cfe6ff">${d.id}</span>
               </div>
             </div>`;
+          el.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            setSelectedSensor({
+              category: d.category, id: d.id, label: d.label,
+              coords: `${d.lat.toFixed(2)}°, ${d.lng.toFixed(2)}°`,
+              range: d.range, status: d.status,
+            });
+          });
           return el;
         }}
         pointLabel={(d: any) =>
@@ -265,6 +282,7 @@ export function Globe3D() {
             <div>${d.id}${d.label ? " · " + d.label : ""}</div>
             <div style="opacity:0.7">${d.status}${d.range ? " · " + d.range : ""}</div>
             <div style="opacity:0.6">${d.lat.toFixed(2)}°, ${d.lng.toFixed(2)}°</div>
+            <div style="opacity:0.5;margin-top:2px">CLICK FOR DETAILS</div>
           </div>`
         }
         /* Pulse rings */

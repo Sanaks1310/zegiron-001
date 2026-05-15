@@ -113,12 +113,13 @@ function tilesAround(centerLat: number, centerLng: number, zoom: number, radius 
 
 export function Globe3D() {
   const globeRef = useRef<GlobeMethods>();
-  const { nodes } = useSensorNodes();
+  const { nodes, visible, setSelectedSensor } = useSensorNodes();
   const [tiles, setTiles] = useState<Tile[]>([]);
 
   const points = useMemo<PointDatum[]>(() => {
     const out: PointDatum[] = [];
     (Object.keys(nodes) as SensorCategory[]).forEach((cat) => {
+      if (!visible[cat]) return;
       const style = CATEGORY_STYLE[cat];
       nodes[cat].forEach((s: SensorEntry) => {
         const c = parseCoords(s.coords);
@@ -132,7 +133,7 @@ export function Globe3D() {
       });
     });
     return out;
-  }, [nodes]);
+  }, [nodes, visible]);
 
   const rings = useMemo(
     () =>

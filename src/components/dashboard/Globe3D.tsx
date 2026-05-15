@@ -246,11 +246,14 @@ export function Globe3D() {
         htmlElement={(d: any) => {
           const el = document.createElement("div");
           const cat = CATEGORY_STYLE[d.category as SensorCategory];
+          const svg = ICON_SVG[d.category as SensorCategory];
           el.innerHTML = `
-            <div style="transform:translate(-50%,-130%);pointer-events:none;font-family:ui-monospace,monospace;font-size:10px;line-height:1.1;white-space:nowrap;">
-              <div style="display:flex;align-items:center;gap:4px;background:rgba(8,16,28,0.85);border:1px solid ${d.color};padding:2px 6px;border-radius:3px;color:${d.color};font-weight:700;letter-spacing:0.08em;box-shadow:0 0 8px ${d.color}55;">
-                <span style="width:6px;height:6px;border-radius:9999px;background:${d.color};box-shadow:0 0 6px ${d.color};"></span>
-                ${cat.label} · <span style="color:#cfe6ff;font-weight:600;">${d.id}</span>
+            <div style="transform:translate(-50%,-100%);pointer-events:none;font-family:ui-monospace,monospace;font-size:9px;line-height:1;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9999px;background:rgba(8,16,28,0.92);border:1.5px solid ${d.color};color:${d.color};box-shadow:0 0 10px ${d.color}88, inset 0 0 6px ${d.color}44;">
+                ${svg}
+              </div>
+              <div style="background:rgba(8,16,28,0.85);border:1px solid ${d.color}66;padding:1px 5px;border-radius:2px;color:${d.color};font-weight:700;letter-spacing:0.06em;">
+                ${cat.label}·<span style="color:#cfe6ff">${d.id}</span>
               </div>
             </div>`;
           return el;

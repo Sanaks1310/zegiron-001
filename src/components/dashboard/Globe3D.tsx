@@ -22,11 +22,23 @@ function parseCoords(coords?: string): { lat: number; lng: number } | null {
 
 /* --------------------------- sensor visual style -------------------------- */
 
+/* Inline SVGs for unique per-category icons (lucide-style 24x24) */
+const ICON_SVG: Record<SensorCategory, string> = {
+  // radar dish
+  radar: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.07 4.93A10 10 0 0 0 6.99 3.34"/><path d="M4 6h.01"/><path d="M2.29 9.62A10 10 0 1 0 21.31 8.35"/><path d="M16.24 7.76A6 6 0 1 0 17.7 13.7"/><path d="M12 18v-6l4 2"/></svg>`,
+  // eye for EO/IR
+  eoir: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  // plane for AIS (per request)
+  ais: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>`,
+  // antenna for passive RF
+  passiveRf: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5C7 7 7 11 5 13.5"/><path d="M19 4.5c2 2.5 2 6.5 0 9"/><path d="M2 8.82C3.36 7.84 5.5 7 8 7s4.64.84 6 1.82"/><path d="M22 8.82C20.64 7.84 18.5 7 16 7s-4.64.84-6 1.82"/><path d="M12 12v10"/><path d="m9 22 3-4 3 4"/></svg>`,
+};
+
 const CATEGORY_STYLE: Record<SensorCategory, { color: string; label: string; size: number }> = {
-  radar:     { color: "#3da9fc", label: "RADAR",   size: 1.2 },
-  eoir:      { color: "#3df0a7", label: "EO/IR",   size: 1.0 },
-  ais:       { color: "#f0a93d", label: "AIS",     size: 1.1 },
-  passiveRf: { color: "#d83df0", label: "PASS-RF", size: 0.9 },
+  radar:     { color: "#3da9fc", label: "RADAR",   size: 0.5 },
+  eoir:      { color: "#3df0a7", label: "EO/IR",   size: 0.5 },
+  ais:       { color: "#f0a93d", label: "AIS",     size: 0.5 },
+  passiveRf: { color: "#d83df0", label: "PASS-RF", size: 0.5 },
 };
 
 interface PointDatum {
@@ -138,7 +150,7 @@ export function Globe3D() {
   useEffect(() => {
     const g = globeRef.current;
     if (!g) return;
-    g.pointOfView({ lat: 54.5, lng: 1.5, altitude: 1.4 }, 0);
+    g.pointOfView({ lat: 20, lng: 30, altitude: 2.4 }, 0);
     const controls: any = g.controls();
     controls.autoRotate = false; // off so users can read labels
     controls.enableDamping = true;
@@ -169,7 +181,7 @@ export function Globe3D() {
       const dir = (e as CustomEvent).detail as "in" | "out" | "reset";
       const pov = g.pointOfView();
       if (dir === "reset") {
-        g.pointOfView({ lat: 54.5, lng: 1.5, altitude: 1.4 }, 600);
+        g.pointOfView({ lat: 20, lng: 30, altitude: 2.4 }, 600);
       } else {
         const factor = dir === "in" ? 0.65 : 1.5;
         const next = Math.max(0.08, Math.min(4, (pov.altitude || 2.2) * factor));
@@ -234,11 +246,14 @@ export function Globe3D() {
         htmlElement={(d: any) => {
           const el = document.createElement("div");
           const cat = CATEGORY_STYLE[d.category as SensorCategory];
+          const svg = ICON_SVG[d.category as SensorCategory];
           el.innerHTML = `
-            <div style="transform:translate(-50%,-130%);pointer-events:none;font-family:ui-monospace,monospace;font-size:10px;line-height:1.1;white-space:nowrap;">
-              <div style="display:flex;align-items:center;gap:4px;background:rgba(8,16,28,0.85);border:1px solid ${d.color};padding:2px 6px;border-radius:3px;color:${d.color};font-weight:700;letter-spacing:0.08em;box-shadow:0 0 8px ${d.color}55;">
-                <span style="width:6px;height:6px;border-radius:9999px;background:${d.color};box-shadow:0 0 6px ${d.color};"></span>
-                ${cat.label} · <span style="color:#cfe6ff;font-weight:600;">${d.id}</span>
+            <div style="transform:translate(-50%,-100%);pointer-events:none;font-family:ui-monospace,monospace;font-size:9px;line-height:1;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9999px;background:rgba(8,16,28,0.92);border:1.5px solid ${d.color};color:${d.color};box-shadow:0 0 10px ${d.color}88, inset 0 0 6px ${d.color}44;">
+                ${svg}
+              </div>
+              <div style="background:rgba(8,16,28,0.85);border:1px solid ${d.color}66;padding:1px 5px;border-radius:2px;color:${d.color};font-weight:700;letter-spacing:0.06em;">
+                ${cat.label}·<span style="color:#cfe6ff">${d.id}</span>
               </div>
             </div>`;
           return el;

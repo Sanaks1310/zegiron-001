@@ -1,6 +1,7 @@
 import { useCallback, useRef } from "react";
 import { StatusSelector } from "./StatusSelector";
 import { Globe3D } from "./Globe3D";
+import { GlobeLayerToggle } from "./GlobeLayerToggle";
 import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 
 export function MainMapDisplay() {

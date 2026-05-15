@@ -1,21 +1,21 @@
 export const sensorNodes = {
   radar: [
-    { id: "RADAR-01", label: "COASTAL",    coords: "54.3°N 003.6°E", range: "250km", status: "operational" as const },
-    { id: "RADAR-02", label: "LONG RANGE", coords: "54.1°N 003.1°W", range: "400km", status: "operational" as const },
-    { id: "RADAR-03", label: "AIRBORNE",   coords: "55.2°N 001.9°W", range: "",      status: "fault" as const },
+    { id: "RADAR-01", label: "COASTAL",    coords: "28.6°N 077.2°E", range: "250km", status: "operational" as const }, // New Delhi
+    { id: "RADAR-02", label: "LONG RANGE", coords: "38.9°N 077.0°W", range: "400km", status: "operational" as const }, // Washington DC
+    { id: "RADAR-03", label: "AIRBORNE",   coords: "51.5°N 000.1°W", range: "",      status: "fault" as const },        // London
   ],
   eoir: [
-    { id: "EOIR-01", label: "THERMAL", coords: "54.5°N 003.5°E", range: "32km", status: "operational" as const },
-    { id: "EOIR-02", label: "MWIR",    coords: "54.3°N 001.5°E", range: "28km", status: "operational" as const },
+    { id: "EOIR-01", label: "THERMAL", coords: "35.7°N 139.7°E", range: "32km", status: "operational" as const }, // Tokyo
+    { id: "EOIR-02", label: "MWIR",    coords: "48.9°N 002.3°E", range: "28km", status: "operational" as const }, // Paris
   ],
   ais: [
-    { id: "AIS-COASTAL",  label: "SECTOR-BRAVO",   coords: "53.9°N 002.4°E", vessels: 147, status: "operational" as const },
-    { id: "AIS-OFFSHORE", label: "SECTOR-CHARLIE", coords: "55.6°N 004.2°E", vessels: 89,  status: "operational" as const },
+    { id: "AIS-COASTAL",  label: "SECTOR-BRAVO",   coords: "01.3°N 103.8°E", vessels: 147, status: "operational" as const }, // Singapore
+    { id: "AIS-OFFSHORE", label: "SECTOR-CHARLIE", coords: "40.7°N 074.0°W", vessels: 89,  status: "operational" as const }, // New York
   ],
   passiveRf: [
-    { id: "RF-NODE-ALPHA", coords: "55.1°N 001.5°E", status: "monitoring" as const },
-    { id: "RF-NODE-BRAVO", coords: "54.7°N 002.2°W", status: "monitoring" as const },
-    { id: "RF-NODE-GAMMA", coords: "54.3°N 001.9°E", status: "monitoring" as const },
+    { id: "RF-NODE-ALPHA", coords: "55.8°N 037.6°E", status: "monitoring" as const }, // Moscow
+    { id: "RF-NODE-BRAVO", coords: "33.9°S 151.2°E", status: "monitoring" as const }, // Sydney
+    { id: "RF-NODE-GAMMA", coords: "19.4°N 099.1°W", status: "monitoring" as const }, // Mexico City
   ],
 };
 

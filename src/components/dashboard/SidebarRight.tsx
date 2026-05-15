@@ -2,7 +2,9 @@ import { SensorNodesPanel } from "./SensorNodesPanel";
 import { SelectedTargetPanel } from "./SelectedTargetPanel";
 import { SensorFusionPanel } from "./SensorFusionPanel";
 import { IntelligenceFeed } from "./IntelligenceFeed";
+import { SelectedSensorPanel } from "./SelectedSensorPanel";
 import { useDashboardLayout } from "@/context/DashboardLayoutContext";
+import { useSensorNodes } from "@/context/SensorNodesContext";
 import { motion } from "framer-motion";
 
 const panelMap: Record<string, React.FC> = {
@@ -14,6 +16,7 @@ const panelMap: Record<string, React.FC> = {
 
 export function SidebarRight() {
   const { getSidebarPanels, isVisible } = useDashboardLayout();
+  const { selectedSensor } = useSensorNodes();
   const panels = getSidebarPanels().filter(p => isVisible(p.id));
 
   return (
@@ -23,7 +26,12 @@ export function SidebarRight() {
       transition={{ duration: 0.4 }}
       className="h-full border-l border-border panel-bg flex flex-col overflow-y-auto"
     >
-      {panels.length === 0 ? (
+      {selectedSensor && (
+        <div className="p-2 border-b border-border/30">
+          <SelectedSensorPanel />
+        </div>
+      )}
+      {panels.length === 0 && !selectedSensor ? (
         <div className="flex-1 flex items-center justify-center text-muted-foreground text-[10px]">
           No panels visible
         </div>

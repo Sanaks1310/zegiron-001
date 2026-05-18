@@ -18,7 +18,7 @@ function DashboardContent() {
     <div className="h-screen flex flex-col overflow-hidden">
       {isVisible("top-header") && <TopStatusHeader />}
       <div className="flex-1 min-h-0 relative">
-        <MainMapDisplay />
+        {isVisible("radar-map") && <MainMapDisplay />}
         <FloatingPanels />
       </div>
       <div className="h-10 shrink-0 border-t border-border bg-card/80">

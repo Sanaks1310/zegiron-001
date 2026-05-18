@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react";
-import { StatusSelector } from "./StatusSelector";
+
 import { Globe3D } from "./Globe3D";
 
 import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
@@ -29,7 +29,7 @@ export function MainMapDisplay() {
       {/* Scanline */}
       <div className="absolute inset-0 scanline pointer-events-none z-[1]" />
 
-      <StatusSelector />
+      
       
 
       {/* Vignette */}

@@ -135,17 +135,18 @@ export function Globe3D() {
     return out;
   }, [nodes, visible]);
 
-  const rings = useMemo(
-    () =>
-      points.map((p) => ({
-        lat: p.lat, lng: p.lng,
-        maxR: p.category === "radar" ? 6 : 3,
-        propagationSpeed: 2,
-        repeatPeriod: p.status === "fault" ? 800 : 1800,
-        color: p.color,
-      })),
-    [points]
-  );
+  // 3 concurrent outward-propagating rings per sensor (transmission signal effect)
+  const rings = useMemo(() => {
+    const out: { lat: number; lng: number; maxR: number; propagationSpeed: number; repeatPeriod: number; color: string }[] = [];
+    points.forEach((p) => {
+      const maxR = p.category === "radar" ? 7 : p.category === "eoir" ? 5 : 4;
+      const speed = 2;
+      // lifetime = maxR / speed (seconds). With repeatPeriod = lifetime*1000/3 we get 3 concurrent rings.
+      const repeatPeriod = (maxR / speed) * 1000 / 3;
+      out.push({ lat: p.lat, lng: p.lng, maxR, propagationSpeed: speed, repeatPeriod, color: p.color });
+    });
+    return out;
+  }, [points]);
 
   // Camera controls + tile streaming based on POV
   useEffect(() => {
@@ -287,7 +288,16 @@ export function Globe3D() {
         }
         /* Pulse rings */
         ringsData={rings}
-        ringColor={(r: any) => () => r.color}
+        ringColor={(r: any) => (t: number) => {
+          // t: 0 (start, at center) → 1 (fully expanded). Fade out as it expands.
+          const hex = r.color.replace("#", "");
+          const bigint = parseInt(hex, 16);
+          const cr = (bigint >> 16) & 255;
+          const cg = (bigint >> 8) & 255;
+          const cb = bigint & 255;
+          const a = Math.max(0, 0.9 * (1 - t));
+          return `rgba(${cr},${cg},${cb},${a})`;
+        }}
         ringMaxRadius="maxR"
         ringPropagationSpeed="propagationSpeed"
         ringRepeatPeriod="repeatPeriod"

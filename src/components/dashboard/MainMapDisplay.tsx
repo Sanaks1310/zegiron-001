@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react";
-import { StatusSelector } from "./StatusSelector";
+
 import { Globe3D } from "./Globe3D";
 
 import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";

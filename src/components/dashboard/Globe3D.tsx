@@ -288,7 +288,16 @@ export function Globe3D() {
         }
         /* Pulse rings */
         ringsData={rings}
-        ringColor={(r: any) => () => r.color}
+        ringColor={(r: any) => (t: number) => {
+          // t: 0 (start, at center) → 1 (fully expanded). Fade out as it expands.
+          const hex = r.color.replace("#", "");
+          const bigint = parseInt(hex, 16);
+          const cr = (bigint >> 16) & 255;
+          const cg = (bigint >> 8) & 255;
+          const cb = bigint & 255;
+          const a = Math.max(0, 0.9 * (1 - t));
+          return `rgba(${cr},${cg},${cb},${a})`;
+        }}
         ringMaxRadius="maxR"
         ringPropagationSpeed="propagationSpeed"
         ringRepeatPeriod="repeatPeriod"

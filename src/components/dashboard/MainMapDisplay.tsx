@@ -29,7 +29,7 @@ export function MainMapDisplay() {
       {/* Scanline */}
       <div className="absolute inset-0 scanline pointer-events-none z-[1]" />
 
-      <StatusSelector />
+      
       
 
       {/* Vignette */}

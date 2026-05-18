@@ -255,15 +255,38 @@ export function Globe3D() {
         htmlLng={(d: any) => d.lng}
         htmlAltitude={0.05}
         htmlElement={(d: any) => {
+          // Inject ring keyframes once
+          if (!document.getElementById("sensor-ring-kf")) {
+            const style = document.createElement("style");
+            style.id = "sensor-ring-kf";
+            style.textContent = `
+              @keyframes sensor-ring-pulse {
+                0%   { transform: translate(-50%,-50%) scale(0.4); opacity: 0.9; }
+                80%  { opacity: 0.15; }
+                100% { transform: translate(-50%,-50%) scale(3.2); opacity: 0; }
+              }
+            `;
+            document.head.appendChild(style);
+          }
           const el = document.createElement("div");
           const cat = CATEGORY_STYLE[d.category as SensorCategory];
           const svg = ICON_SVG[d.category as SensorCategory];
+          const showRings = d.category === "radar" || d.category === "eoir";
+          const ringsHtml = showRings
+            ? `
+              <div style="position:absolute;left:50%;top:0;width:0;height:0;pointer-events:none;">
+                ${[0, 0.9, 1.8].map(delay => `
+                  <div style="position:absolute;left:50%;top:50%;width:30px;height:30px;border-radius:9999px;border:2px solid ${d.color};box-shadow:0 0 8px ${d.color}aa;transform:translate(-50%,-50%) scale(0.4);animation:sensor-ring-pulse 2.7s ease-out ${delay}s infinite;"></div>
+                `).join("")}
+              </div>`
+            : "";
           el.innerHTML = `
-            <div style="transform:translate(-50%,-100%);cursor:pointer;font-family:ui-monospace,monospace;font-size:9px;line-height:1;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px;">
-              <div style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9999px;background:rgba(8,16,28,0.92);border:1.5px solid ${d.color};color:${d.color};box-shadow:0 0 10px ${d.color}88, inset 0 0 6px ${d.color}44;">
+            <div style="position:relative;transform:translate(-50%,-100%);cursor:pointer;font-family:ui-monospace,monospace;font-size:9px;line-height:1;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px;">
+              ${ringsHtml}
+              <div style="position:relative;display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9999px;background:rgba(8,16,28,0.92);border:1.5px solid ${d.color};color:${d.color};box-shadow:0 0 10px ${d.color}88, inset 0 0 6px ${d.color}44;">
                 ${svg}
               </div>
-              <div style="background:rgba(8,16,28,0.85);border:1px solid ${d.color}66;padding:1px 5px;border-radius:2px;color:${d.color};font-weight:700;letter-spacing:0.06em;">
+              <div style="position:relative;background:rgba(8,16,28,0.85);border:1px solid ${d.color}66;padding:1px 5px;border-radius:2px;color:${d.color};font-weight:700;letter-spacing:0.06em;">
                 ${cat.label}·<span style="color:#cfe6ff">${d.id}</span>
               </div>
             </div>`;

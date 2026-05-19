@@ -1,6 +1,7 @@
 import { useCallback, useRef } from "react";
 
 import { Globe3D } from "./Globe3D";
+import { GlobeLayerToggle } from "./GlobeLayerToggle";
 
 import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 
@@ -28,6 +29,12 @@ export function MainMapDisplay() {
 
       {/* Scanline */}
       <div className="absolute inset-0 scanline pointer-events-none z-[1]" />
+
+      {/* Draggable layer legend / filter */}
+      <GlobeLayerToggle />
+
+
+      
 
       
       

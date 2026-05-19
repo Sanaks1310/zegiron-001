@@ -101,6 +101,30 @@ function AddForm({ category, onClose }: AddFormProps) {
         <option value="monitoring">monitoring</option>
         <option value="fault">fault</option>
       </select>
+      <div className="flex gap-1">
+        <button
+          type="button"
+          onClick={() => setAffiliation("friendly")}
+          className={`flex-1 text-[9px] py-0.5 rounded border tracking-wider uppercase transition-colors ${
+            affiliation === "friendly"
+              ? "border-warning text-warning bg-warning/10 glow-orange"
+              : "border-border/60 text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Friendly
+        </button>
+        <button
+          type="button"
+          onClick={() => setAffiliation("unfriendly")}
+          className={`flex-1 text-[9px] py-0.5 rounded border tracking-wider uppercase transition-colors ${
+            affiliation === "unfriendly"
+              ? "border-destructive text-destructive bg-destructive/10 glow-magenta"
+              : "border-border/60 text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Unfriendly
+        </button>
+      </div>
       <button
         type="submit"
         className="w-full text-[9px] text-primary border border-primary/40 rounded py-0.5 hover:bg-primary/10 transition-colors tracking-wider uppercase"

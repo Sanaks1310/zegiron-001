@@ -12,15 +12,22 @@ function StatusDot({ status }: { status: string }) {
   return <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors[status] || "bg-muted-foreground"}`} />;
 }
 
-function SensorItem({ id, label, range, status, vessels, coords, affiliation }: SensorEntry) {
+function SensorItem({ entry, category }: { entry: SensorEntry; category: SensorCategory }) {
+  const { id, label, range, status, vessels, coords, affiliation } = entry;
+  const { selectedSensor, setSelectedSensor } = useSensorNodes();
   const isFault = status === "fault";
   const isHostile = affiliation === "unfriendly";
+  const isActive = selectedSensor?.id === id;
   return (
-    <div className="flex items-center justify-between py-1 border-b border-border/30 last:border-0 hover-glow rounded px-1 cursor-default">
+    <button
+      type="button"
+      onClick={() => setSelectedSensor({ ...entry, category })}
+      className={`w-full flex items-center justify-between py-1 border-b border-border/30 last:border-0 hover-glow rounded px-1 text-left transition-colors ${isActive ? "bg-primary/10 border-primary/40" : ""}`}
+    >
       <div className="flex items-center gap-1.5">
         <StatusDot status={status} />
         <div>
-          <span className={`text-[10px] ${isHostile ? "text-destructive" : "text-foreground"}`}>
+          <span className={`text-[10px] ${isHostile ? "text-destructive" : isActive ? "text-primary glow-blue" : "text-foreground"}`}>
             {id}{label ? ` · ${label}` : ""}
           </span>
           {coords && <div className="text-[8px] text-muted-foreground">{coords}</div>}
@@ -37,7 +44,7 @@ function SensorItem({ id, label, range, status, vessels, coords, affiliation }: 
         {vessels !== undefined && <span className="text-[9px] text-warning glow-orange font-bold">{vessels}</span>}
         {status === "monitoring" && <span className="text-[9px] text-primary">MON</span>}
       </div>
-    </div>
+    </button>
   );
 }
 

@@ -12,20 +12,26 @@ function StatusDot({ status }: { status: string }) {
   return <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors[status] || "bg-muted-foreground"}`} />;
 }
 
-function SensorItem({ id, label, range, status, vessels, coords }: SensorEntry) {
+function SensorItem({ id, label, range, status, vessels, coords, affiliation }: SensorEntry) {
   const isFault = status === "fault";
+  const isHostile = affiliation === "unfriendly";
   return (
     <div className="flex items-center justify-between py-1 border-b border-border/30 last:border-0 hover-glow rounded px-1 cursor-default">
       <div className="flex items-center gap-1.5">
         <StatusDot status={status} />
         <div>
-          <span className="text-[10px] text-foreground">
+          <span className={`text-[10px] ${isHostile ? "text-destructive" : "text-foreground"}`}>
             {id}{label ? ` · ${label}` : ""}
           </span>
           {coords && <div className="text-[8px] text-muted-foreground">{coords}</div>}
         </div>
       </div>
-      <div className="text-right">
+      <div className="text-right flex flex-col items-end">
+        {affiliation && (
+          <span className={`text-[8px] font-bold tracking-wider uppercase ${isHostile ? "text-destructive glow-magenta" : "text-warning glow-orange"}`}>
+            {isHostile ? "HOSTILE" : "FRIENDLY"}
+          </span>
+        )}
         {isFault && <span className="text-[9px] text-destructive glow-magenta font-bold">FAULT</span>}
         {range && !isFault && <span className="text-[9px] text-primary glow-blue">{range}</span>}
         {vessels !== undefined && <span className="text-[9px] text-warning glow-orange font-bold">{vessels}</span>}

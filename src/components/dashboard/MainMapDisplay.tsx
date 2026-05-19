@@ -27,8 +27,10 @@ export function MainMapDisplay() {
       {/* 3D Globe */}
       <Globe3D />
 
-      {/* Scanline */}
-      <div className="absolute inset-0 scanline pointer-events-none z-[1]" />
+      {/* Draggable layer legend / filter */}
+      <GlobeLayerToggle />
+
+      
 
       
       

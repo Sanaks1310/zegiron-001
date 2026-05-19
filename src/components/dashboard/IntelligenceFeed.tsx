@@ -1,6 +1,8 @@
 import { intelligenceFeed } from "@/data/mockData";
 import { PanelBox } from "./PanelBox";
 import { FileText } from "lucide-react";
+import { useSensorNodes } from "@/context/SensorNodesContext";
+import { useMemo } from "react";
 
 const severityBorder: Record<string, string> = {
   high: "border-l-destructive",
@@ -10,18 +12,25 @@ const severityBorder: Record<string, string> = {
 
 function highlightSources(text: string) {
   return text.replace(
-    /(RADAR-\d+|RF-NODE-[A-Z]+|EOIR-\d+|AIS-[A-Z]+|HTL-\d+|UNK-\d+|BRSS-\d+|ZG-\d+|WATCHCON-\d+|FOXTROT-\d+)/g,
+    /(RADAR-\w+|RF-NODE-[A-Z]+|EOIR-\w+|AIS-[A-Z0-9]+|HTL-\d+|UNK-\d+|BRSS-\d+|ZG-\d+|WATCHCON-\d+|FOXTROT-\d+)/g,
     "||$1||"
   );
 }
 
 export function IntelligenceFeed() {
+  const { events } = useSensorNodes();
+
+  const merged = useMemo(
+    () => [...events, ...intelligenceFeed],
+    [events]
+  );
+
   return (
     <PanelBox title="INTELLIGENCE FEED" icon={<FileText size={12} />}>
       <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-        {intelligenceFeed.map((item, i) => (
+        {merged.map((item, i) => (
           <div
-            key={i}
+            key={`${item.time}-${i}`}
             className={`border-l-2 ${severityBorder[item.severity]} pl-2 py-1 hover-glow rounded-r cursor-default`}
           >
             <div className="text-[8px] text-muted-foreground tracking-wide">{item.time}</div>

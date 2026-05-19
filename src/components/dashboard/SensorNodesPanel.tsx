@@ -156,7 +156,7 @@ function SensorSection({ title, icon, category, defaultCollapsed }: SensorSectio
   return (
     <PanelBox title={title} icon={icon} defaultCollapsed={defaultCollapsed}>
       {nodes[category].map((s) => (
-        <SensorItem key={s.id} {...s} />
+        <SensorItem key={s.id} entry={s} category={category} />
       ))}
       {!adding ? (
         <button

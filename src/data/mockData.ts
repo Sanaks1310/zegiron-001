@@ -2,7 +2,7 @@ export const sensorNodes = {
   radar: [
     { id: "RADAR-01", label: "COASTAL",    coords: "28.6°N 077.2°E", range: "250km", status: "operational" as const }, // New Delhi
     { id: "RADAR-02", label: "LONG RANGE", coords: "38.9°N 077.0°W", range: "400km", status: "operational" as const }, // Washington DC
-    { id: "RADAR-03", label: "AIRBORNE",   coords: "51.5°N 000.1°W", range: "",      status: "fault" as const },        // London
+    { id: "RADAR-03", label: "AIRBORNE",   coords: "51.5°N 000.1°W", range: "300km", status: "operational" as const },        // London
   ],
   eoir: [
     { id: "EOIR-01", label: "THERMAL", coords: "35.7°N 139.7°E", range: "32km", status: "operational" as const }, // Tokyo

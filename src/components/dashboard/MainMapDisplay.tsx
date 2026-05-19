@@ -1,6 +1,7 @@
 import { useCallback, useRef } from "react";
 
 import { Globe3D } from "./Globe3D";
+import { GlobeLayerToggle } from "./GlobeLayerToggle";
 
 import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 

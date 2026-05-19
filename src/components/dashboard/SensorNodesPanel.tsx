@@ -53,6 +53,7 @@ function AddForm({ category, onClose }: AddFormProps) {
   const [coords, setCoords] = useState("");
   const [extra, setExtra] = useState("");
   const [status, setStatus] = useState<SensorEntry["status"]>("operational");
+  const [affiliation, setAffiliation] = useState<"friendly" | "unfriendly">("friendly");
 
   const extraLabel =
     category === "ais" ? "Vessels" :
@@ -62,7 +63,7 @@ function AddForm({ category, onClose }: AddFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!id.trim()) return;
-    const entry: SensorEntry = { id: id.trim(), status };
+    const entry: SensorEntry = { id: id.trim(), status, affiliation };
     if (label.trim()) entry.label = label.trim();
     if (coords.trim()) entry.coords = coords.trim();
     if (category === "ais") {

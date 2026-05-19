@@ -3,6 +3,8 @@ import { sensorNodes as initialNodes } from "@/data/mockData";
 
 export type SensorCategory = "radar" | "eoir" | "ais" | "passiveRf";
 
+export type SensorAffiliation = "friendly" | "unfriendly";
+
 export interface SensorEntry {
   id: string;
   label?: string;
@@ -10,6 +12,7 @@ export interface SensorEntry {
   range?: string;
   vessels?: number;
   status: "operational" | "fault" | "monitoring";
+  affiliation?: SensorAffiliation;
 }
 
 type State = Record<SensorCategory, SensorEntry[]>;

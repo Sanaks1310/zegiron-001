@@ -12,20 +12,26 @@ function StatusDot({ status }: { status: string }) {
   return <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors[status] || "bg-muted-foreground"}`} />;
 }
 
-function SensorItem({ id, label, range, status, vessels, coords }: SensorEntry) {
+function SensorItem({ id, label, range, status, vessels, coords, affiliation }: SensorEntry) {
   const isFault = status === "fault";
+  const isHostile = affiliation === "unfriendly";
   return (
     <div className="flex items-center justify-between py-1 border-b border-border/30 last:border-0 hover-glow rounded px-1 cursor-default">
       <div className="flex items-center gap-1.5">
         <StatusDot status={status} />
         <div>
-          <span className="text-[10px] text-foreground">
+          <span className={`text-[10px] ${isHostile ? "text-destructive" : "text-foreground"}`}>
             {id}{label ? ` · ${label}` : ""}
           </span>
           {coords && <div className="text-[8px] text-muted-foreground">{coords}</div>}
         </div>
       </div>
-      <div className="text-right">
+      <div className="text-right flex flex-col items-end">
+        {affiliation && (
+          <span className={`text-[8px] font-bold tracking-wider uppercase ${isHostile ? "text-destructive glow-magenta" : "text-warning glow-orange"}`}>
+            {isHostile ? "HOSTILE" : "FRIENDLY"}
+          </span>
+        )}
         {isFault && <span className="text-[9px] text-destructive glow-magenta font-bold">FAULT</span>}
         {range && !isFault && <span className="text-[9px] text-primary glow-blue">{range}</span>}
         {vessels !== undefined && <span className="text-[9px] text-warning glow-orange font-bold">{vessels}</span>}
@@ -47,6 +53,7 @@ function AddForm({ category, onClose }: AddFormProps) {
   const [coords, setCoords] = useState("");
   const [extra, setExtra] = useState("");
   const [status, setStatus] = useState<SensorEntry["status"]>("operational");
+  const [affiliation, setAffiliation] = useState<"friendly" | "unfriendly">("friendly");
 
   const extraLabel =
     category === "ais" ? "Vessels" :
@@ -56,7 +63,7 @@ function AddForm({ category, onClose }: AddFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!id.trim()) return;
-    const entry: SensorEntry = { id: id.trim(), status };
+    const entry: SensorEntry = { id: id.trim(), status, affiliation };
     if (label.trim()) entry.label = label.trim();
     if (coords.trim()) entry.coords = coords.trim();
     if (category === "ais") {
@@ -94,6 +101,30 @@ function AddForm({ category, onClose }: AddFormProps) {
         <option value="monitoring">monitoring</option>
         <option value="fault">fault</option>
       </select>
+      <div className="flex gap-1">
+        <button
+          type="button"
+          onClick={() => setAffiliation("friendly")}
+          className={`flex-1 text-[9px] py-0.5 rounded border tracking-wider uppercase transition-colors ${
+            affiliation === "friendly"
+              ? "border-warning text-warning bg-warning/10 glow-orange"
+              : "border-border/60 text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Friendly
+        </button>
+        <button
+          type="button"
+          onClick={() => setAffiliation("unfriendly")}
+          className={`flex-1 text-[9px] py-0.5 rounded border tracking-wider uppercase transition-colors ${
+            affiliation === "unfriendly"
+              ? "border-destructive text-destructive bg-destructive/10 glow-magenta"
+              : "border-border/60 text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Unfriendly
+        </button>
+      </div>
       <button
         type="submit"
         className="w-full text-[9px] text-primary border border-primary/40 rounded py-0.5 hover:bg-primary/10 transition-colors tracking-wider uppercase"

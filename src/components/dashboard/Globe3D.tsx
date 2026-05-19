@@ -126,7 +126,9 @@ export function Globe3D() {
         if (!c) return;
         out.push({
           lat: c.lat, lng: c.lng, size: style.size,
-          color: s.status === "fault" ? "#f0436b" : style.color,
+          color: s.affiliation === "unfriendly"
+            ? "#f0436b"
+            : s.status === "fault" ? "#f0436b" : style.color,
           category: cat, id: s.id, label: s.label,
           status: s.status, range: s.range,
         });

@@ -137,15 +137,37 @@ export function Globe3D() {
     return out;
   }, [nodes, visible]);
 
+  // Parse "<num> km" → degrees on globe (1° ≈ 111 km)
+  const parseKmToDeg = (range?: string): number | null => {
+    if (!range) return null;
+    const m = range.match(/(\d+(?:\.\d+)?)\s*km/i);
+    if (!m) return null;
+    return parseFloat(m[1]) / 111;
+  };
+
   // 3 concurrent outward-propagating rings per sensor (transmission signal effect)
+  // Plus a radar sweep ring sized to the radar's km range (neon green).
   const rings = useMemo(() => {
     const out: { lat: number; lng: number; maxR: number; propagationSpeed: number; repeatPeriod: number; color: string }[] = [];
     points.forEach((p) => {
       const maxR = p.category === "radar" ? 7 : p.category === "eoir" ? 5 : 4;
       const speed = 2;
-      // lifetime = maxR / speed (seconds). With repeatPeriod = lifetime*1000/3 we get 3 concurrent rings.
       const repeatPeriod = (maxR / speed) * 1000 / 3;
       out.push({ lat: p.lat, lng: p.lng, maxR, propagationSpeed: speed, repeatPeriod, color: p.color });
+
+      if (p.category === "radar") {
+        const deg = parseKmToDeg(p.range);
+        if (deg && deg > 0) {
+          // Neon green radar sweep sized to actual range
+          out.push({
+            lat: p.lat, lng: p.lng,
+            maxR: deg,
+            propagationSpeed: deg / 2, // ~2s sweep
+            repeatPeriod: 2000,
+            color: "#39ff14",
+          });
+        }
+      }
     });
     return out;
   }, [points]);

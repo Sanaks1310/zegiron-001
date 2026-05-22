@@ -421,6 +421,26 @@ export function Globe3D() {
         ringMaxRadius="maxR"
         ringPropagationSpeed="propagationSpeed"
         ringRepeatPeriod="repeatPeriod"
+        /* AIS movement trails (4 segments) */
+        pathsData={aisPaths}
+        pathPoints={(d: any) => d.coords}
+        pathPointLat={(p: any) => p[0]}
+        pathPointLng={(p: any) => p[1]}
+        pathPointAlt={(p: any) => p[2]}
+        pathColor={(d: any) => {
+          const hex = d.color.replace("#", "");
+          const bigint = parseInt(hex, 16);
+          const cr = (bigint >> 16) & 255;
+          const cg = (bigint >> 8) & 255;
+          const cb = bigint & 255;
+          // Fade tail → head
+          return [
+            `rgba(${cr},${cg},${cb},0.1)`,
+            `rgba(${cr},${cg},${cb},0.95)`,
+          ];
+        }}
+        pathStroke={2}
+        pathTransitionDuration={1500}
       />
     </div>
   );

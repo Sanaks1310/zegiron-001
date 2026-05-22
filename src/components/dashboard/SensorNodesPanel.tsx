@@ -58,6 +58,8 @@ function AddForm({ category, onClose }: AddFormProps) {
   const [id, setId] = useState("");
   const [label, setLabel] = useState("");
   const [coords, setCoords] = useState("");
+  const [fromCoords, setFromCoords] = useState("");
+  const [toCoords, setToCoords] = useState("");
   const [extra, setExtra] = useState("");
   const [status, setStatus] = useState<SensorEntry["status"]>("operational");
   const [affiliation, setAffiliation] = useState<"friendly" | "unfriendly">("friendly");
@@ -72,7 +74,14 @@ function AddForm({ category, onClose }: AddFormProps) {
     if (!id.trim()) return;
     const entry: SensorEntry = { id: id.trim(), status, affiliation };
     if (label.trim()) entry.label = label.trim();
-    if (coords.trim()) entry.coords = coords.trim();
+    if (category === "ais") {
+      if (fromCoords.trim()) entry.coords = fromCoords.trim();
+      if (fromCoords.trim() && toCoords.trim()) {
+        entry.route = { from: fromCoords.trim(), to: toCoords.trim() };
+      }
+    } else if (coords.trim()) {
+      entry.coords = coords.trim();
+    }
     if (category === "ais") {
       const v = parseInt(extra, 10);
       if (!isNaN(v)) entry.vessels = v;
@@ -95,7 +104,14 @@ function AddForm({ category, onClose }: AddFormProps) {
       </div>
       <input className={inputCls} placeholder="ID (e.g. RADAR-04)" value={id} onChange={e => setId(e.target.value)} autoFocus />
       <input className={inputCls} placeholder="Label" value={label} onChange={e => setLabel(e.target.value)} />
-      <input className={inputCls} placeholder="Coords (e.g. 54.5°N 003.2°E)" value={coords} onChange={e => setCoords(e.target.value)} />
+      {category === "ais" ? (
+        <>
+          <input className={inputCls} placeholder="From (e.g. 28.6°N 077.2°E)" value={fromCoords} onChange={e => setFromCoords(e.target.value)} />
+          <input className={inputCls} placeholder="To (e.g. 12.97°N 077.59°E)" value={toCoords} onChange={e => setToCoords(e.target.value)} />
+        </>
+      ) : (
+        <input className={inputCls} placeholder="Coords (e.g. 54.5°N 003.2°E)" value={coords} onChange={e => setCoords(e.target.value)} />
+      )}
       {extraLabel && (
         <input className={inputCls} placeholder={extraLabel} value={extra} onChange={e => setExtra(e.target.value)} />
       )}

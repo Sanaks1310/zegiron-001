@@ -9,8 +9,16 @@ export const sensorNodes = {
     { id: "EOIR-02", label: "MWIR",    coords: "48.9°N 002.3°E", range: "28km", status: "operational" as const }, // Paris
   ],
   ais: [
-    { id: "AIS-COASTAL",  label: "SECTOR-BRAVO",   coords: "01.3°N 103.8°E", vessels: 147, status: "operational" as const }, // Singapore
-    { id: "AIS-OFFSHORE", label: "SECTOR-CHARLIE", coords: "40.7°N 074.0°W", vessels: 89,  status: "operational" as const }, // New York
+    {
+      id: "AIS-COASTAL", label: "SECTOR-BRAVO",
+      coords: "28.6°N 077.2°E", vessels: 147, status: "operational" as const,
+      route: { from: "28.6°N 077.2°E", to: "12.97°N 077.59°E" }, // Delhi → Bangalore
+    },
+    {
+      id: "AIS-OFFSHORE", label: "SECTOR-CHARLIE",
+      coords: "40.7°N 074.0°W", vessels: 89, status: "operational" as const,
+      route: { from: "40.7°N 074.0°W", to: "25.76°N 080.19°W" }, // NY → Miami
+    },
   ],
   passiveRf: [
     { id: "RF-NODE-ALPHA", coords: "55.8°N 037.6°E", status: "monitoring" as const }, // Moscow

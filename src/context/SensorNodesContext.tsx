@@ -13,6 +13,8 @@ export interface SensorEntry {
   vessels?: number;
   status: "operational" | "fault" | "monitoring";
   affiliation?: SensorAffiliation;
+  /** AIS only: from/to coordinate strings to animate the vessel between */
+  route?: { from: string; to: string };
 }
 
 type State = Record<SensorCategory, SensorEntry[]>;

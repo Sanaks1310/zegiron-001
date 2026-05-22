@@ -207,11 +207,11 @@ export function Globe3D() {
       const dir = (e as CustomEvent).detail as "in" | "out" | "reset";
       const pov = g.pointOfView();
       if (dir === "reset") {
-        g.pointOfView({ lat: 20, lng: 30, altitude: 2.4 }, 600);
+        g.pointOfView({ lat: 20, lng: 30, altitude: 2.4 }, 0);
       } else {
         const factor = dir === "in" ? 0.65 : 1.5;
         const next = Math.max(0.08, Math.min(4, (pov.altitude || 2.2) * factor));
-        g.pointOfView({ ...pov, altitude: next }, 400);
+        g.pointOfView({ ...pov, altitude: next }, 0);
       }
     };
     window.addEventListener("globe-zoom", onZoom);

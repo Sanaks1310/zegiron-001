@@ -116,16 +116,74 @@ export function Globe3D() {
   const { nodes, visible, setSelectedSensor } = useSensorNodes();
   const [tiles, setTiles] = useState<Tile[]>([]);
 
+  /* ---------------------- AIS animation (moving vessels) ---------------------- */
+  // Per-AIS animated position + trail history (last 5 samples → 4 line segments)
+  const [aisAnim, setAisAnim] = useState<Record<string, { lat: number; lng: number; history: { lat: number; lng: number }[] }>>({});
+  const aisRoutesRef = useRef<Record<string, { from: { lat: number; lng: number }; to: { lat: number; lng: number } }>>({});
+
+  useEffect(() => {
+    // Build/refresh route lookup whenever AIS nodes change
+    const map: Record<string, { from: { lat: number; lng: number }; to: { lat: number; lng: number } }> = {};
+    nodes.ais.forEach((s) => {
+      if (!s.route) return;
+      const f = parseCoords(s.route.from);
+      const t = parseCoords(s.route.to);
+      if (f && t) map[s.id] = { from: f, to: t };
+    });
+    aisRoutesRef.current = map;
+  }, [nodes.ais]);
+
+  useEffect(() => {
+    // Animation loop: ping-pong each AIS node along its route over ~30s.
+    const PERIOD = 30000; // ms for a full back-and-forth cycle
+    const SAMPLE_MS = 1500; // history sample interval
+    let raf = 0;
+    let lastSample = performance.now();
+    const tick = (now: number) => {
+      const t = (now % PERIOD) / PERIOD; // 0..1
+      // triangle wave: 0→1→0
+      const k = t < 0.5 ? t * 2 : 2 - t * 2;
+      const sample = now - lastSample >= SAMPLE_MS;
+      if (sample) lastSample = now;
+
+      setAisAnim((prev) => {
+        const next: typeof prev = { ...prev };
+        const routes = aisRoutesRef.current;
+        Object.entries(routes).forEach(([id, r]) => {
+          const lat = r.from.lat + (r.to.lat - r.from.lat) * k;
+          const lng = r.from.lng + (r.to.lng - r.from.lng) * k;
+          const prevEntry = prev[id];
+          const history = prevEntry ? prevEntry.history : [];
+          const newHistory = sample
+            ? [...history, { lat, lng }].slice(-5)
+            : history;
+          next[id] = { lat, lng, history: newHistory };
+        });
+        return next;
+      });
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
   const points = useMemo<PointDatum[]>(() => {
     const out: PointDatum[] = [];
     (Object.keys(nodes) as SensorCategory[]).forEach((cat) => {
       if (!visible[cat]) return;
       const style = CATEGORY_STYLE[cat];
       nodes[cat].forEach((s: SensorEntry) => {
-        const c = parseCoords(s.coords);
-        if (!c) return;
+        let lat: number, lng: number;
+        if (cat === "ais" && aisAnim[s.id]) {
+          lat = aisAnim[s.id].lat;
+          lng = aisAnim[s.id].lng;
+        } else {
+          const c = parseCoords(s.coords);
+          if (!c) return;
+          lat = c.lat; lng = c.lng;
+        }
         out.push({
-          lat: c.lat, lng: c.lng, size: style.size,
+          lat, lng, size: style.size,
           color: s.affiliation === "unfriendly"
             ? "#f0436b"
             : s.status === "fault" ? "#f0436b" : style.color,
@@ -135,7 +193,22 @@ export function Globe3D() {
       });
     });
     return out;
-  }, [nodes, visible]);
+  }, [nodes, visible, aisAnim]);
+
+  /* AIS trail paths: last 4 segments behind each moving vessel */
+  const aisPaths = useMemo(() => {
+    if (!visible.ais) return [];
+    return nodes.ais
+      .map((s) => {
+        const a = aisAnim[s.id];
+        if (!a || a.history.length < 2) return null;
+        const coords = [...a.history, { lat: a.lat, lng: a.lng }].map((p) => [p.lat, p.lng, 0.012]);
+        const color = s.affiliation === "unfriendly" ? "#f0436b" : "#f0a93d";
+        return { coords, color, id: s.id };
+      })
+      .filter(Boolean) as { coords: number[][]; color: string; id: string }[];
+  }, [aisAnim, nodes.ais, visible.ais]);
+
 
   // Parse "<num> km" → degrees on globe (1° ≈ 111 km)
   const parseKmToDeg = (range?: string): number | null => {

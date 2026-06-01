@@ -138,8 +138,8 @@ export function Globe3D() {
 
   useEffect(() => {
     // Build/refresh route lookup whenever AIS nodes change.
-    const SPEED_KMH = 900;          // cruise speed of a commercial flight
-    const TIME_COMPRESSION = 720;   // 1 real hour → 5 sec (3600/5 = 720)
+    const SPEED_KMH = 900;        // cruise speed of a commercial flight
+    const TIME_COMPRESSION = 1;   // 1:1 with real life (user requested real flight duration)
     const map: Record<string, { from: { lat: number; lng: number }; to: { lat: number; lng: number }; period: number }> = {};
     nodes.ais.forEach((s) => {
       if (!s.route) return;

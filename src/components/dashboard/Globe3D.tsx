@@ -119,39 +119,60 @@ export function Globe3D() {
   /* ---------------------- AIS animation (moving vessels) ---------------------- */
   // Per-AIS animated position + trail history (last 5 samples → 4 line segments)
   const [aisAnim, setAisAnim] = useState<Record<string, { lat: number; lng: number; history: { lat: number; lng: number }[] }>>({});
-  const aisRoutesRef = useRef<Record<string, { from: { lat: number; lng: number }; to: { lat: number; lng: number } }>>({});
+  // Per-route data including real-world-derived period (ping-pong cycle in ms).
+  // Speed model: ~900 km/h cruise (commercial flight). Delhi→Bangalore ≈ 1740 km
+  // → ~1.93h one-way → ~3.87h ping-pong. We compress time so the animation is
+  // visible but still proportional: 1 real hour = 5 real-time seconds.
+  const aisRoutesRef = useRef<Record<string, { from: { lat: number; lng: number }; to: { lat: number; lng: number }; period: number }>>({});
+
+  // Haversine distance in km between two lat/lng points.
+  const haversineKm = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => {
+    const R = 6371;
+    const toRad = (d: number) => (d * Math.PI) / 180;
+    const dLat = toRad(b.lat - a.lat);
+    const dLng = toRad(b.lng - a.lng);
+    const s = Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(s));
+  };
 
   useEffect(() => {
-    // Build/refresh route lookup whenever AIS nodes change
-    const map: Record<string, { from: { lat: number; lng: number }; to: { lat: number; lng: number } }> = {};
+    // Build/refresh route lookup whenever AIS nodes change.
+    const SPEED_KMH = 900;        // cruise speed of a commercial flight
+    const TIME_COMPRESSION = 1;   // 1:1 with real life (user requested real flight duration)
+    const map: Record<string, { from: { lat: number; lng: number }; to: { lat: number; lng: number }; period: number }> = {};
     nodes.ais.forEach((s) => {
       if (!s.route) return;
       const f = parseCoords(s.route.from);
       const t = parseCoords(s.route.to);
-      if (f && t) map[s.id] = { from: f, to: t };
+      if (!f || !t) return;
+      const distKm = haversineKm(f, t);
+      const realHoursOneWay = distKm / SPEED_KMH;
+      const realMsPingPong = realHoursOneWay * 2 * 3600 * 1000;
+      const period = Math.max(4000, realMsPingPong / TIME_COMPRESSION);
+      map[s.id] = { from: f, to: t, period };
     });
     aisRoutesRef.current = map;
   }, [nodes.ais]);
 
   useEffect(() => {
-    // Animation loop: ping-pong each AIS node along its route over ~30s.
-    const PERIOD = 30000; // ms for a full back-and-forth cycle
-    const SAMPLE_MS = 1500; // history sample interval
+    // Per-route ping-pong using each route's own period (derived from real distance).
     let raf = 0;
-    let lastSample = performance.now();
+    const lastSampleRef: Record<string, number> = {};
     const tick = (now: number) => {
-      const t = (now % PERIOD) / PERIOD; // 0..1
-      // triangle wave: 0→1→0
-      const k = t < 0.5 ? t * 2 : 2 - t * 2;
-      const sample = now - lastSample >= SAMPLE_MS;
-      if (sample) lastSample = now;
-
       setAisAnim((prev) => {
         const next: typeof prev = { ...prev };
         const routes = aisRoutesRef.current;
         Object.entries(routes).forEach(([id, r]) => {
+          const t = (now % r.period) / r.period;
+          const k = t < 0.5 ? t * 2 : 2 - t * 2;
           const lat = r.from.lat + (r.to.lat - r.from.lat) * k;
           const lng = r.from.lng + (r.to.lng - r.from.lng) * k;
+          // Sample history 5 times per full cycle so trail spans a visible arc.
+          const sampleMs = r.period / 40;
+          const last = lastSampleRef[id] ?? 0;
+          const sample = now - last >= sampleMs;
+          if (sample) lastSampleRef[id] = now;
           const prevEntry = prev[id];
           const history = prevEntry ? prevEntry.history : [];
           const newHistory = sample

@@ -507,7 +507,8 @@ export function Globe3D() {
         pathPointAlt={(p: any) => p[2]}
         pathColor={(d: any) => {
           if (d.kind === "radar-ring") {
-            return `rgba(57,255,20,${d.opacity})`;
+            const c = `rgba(57,255,20,${d.opacity})`;
+            return [c, c];
           }
           const hex = d.color.replace("#", "");
           const bigint = parseInt(hex, 16);
@@ -519,7 +520,9 @@ export function Globe3D() {
             `rgba(${cr},${cg},${cb},0.95)`,
           ];
         }}
-        pathStroke={(d: any) => (d.kind === "radar-ring" ? 0.6 : 2)}
+        pathStroke={(d: any) => (d.kind === "radar-ring" ? 2.5 : 2)}
+        pathDashLength={(d: any) => (d.kind === "radar-ring" ? 0 : 0)}
+        pathDashGap={0}
         pathTransitionDuration={0}
         /* Radar sweep wedges (custom three.js layer) */
         customLayerData={radarSweeps}

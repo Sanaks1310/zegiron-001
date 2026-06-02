@@ -255,7 +255,7 @@ export function Globe3D() {
         Math.sin(θ) * Math.sin(α) * Math.cos(φ0),
         Math.cos(α) - Math.sin(φ0) * Math.sin(φ)
       );
-      pts.push([φ * toDeg, λ * toDeg, 0.005]);
+      pts.push([φ * toDeg, λ * toDeg, 0.012]);
     }
     return pts;
   };

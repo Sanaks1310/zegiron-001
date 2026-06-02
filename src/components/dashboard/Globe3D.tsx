@@ -550,11 +550,13 @@ export function Globe3D() {
           return mesh;
         }}
         customThreeObjectUpdate={(obj: any, d: any) => {
-          // Position handled automatically; nothing per-update needed.
+          const g = globeRef.current;
+          if (!g) return;
+          const { x, y, z } = (g as any).getCoords(d.lat, d.lng, 0.004);
+          obj.position.set(x, y, z);
+          // Orient the wedge tangent to the globe surface (lookAt origin from outside)
+          obj.lookAt(0, 0, 0);
         }}
-        customLayerLat={(d: any) => d.lat}
-        customLayerLng={(d: any) => d.lng}
-        customLayerAltitude={() => 0.004}
       />
     </div>
   );

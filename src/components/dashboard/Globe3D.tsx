@@ -515,14 +515,17 @@ export function Globe3D() {
           const cr = (bigint >> 16) & 255;
           const cg = (bigint >> 8) & 255;
           const cb = bigint & 255;
+          // Trail fades from transparent tail to bright head (at airplane)
           return [
-            `rgba(${cr},${cg},${cb},0.1)`,
-            `rgba(${cr},${cg},${cb},0.95)`,
+            `rgba(${cr},${cg},${cb},0)`,
+            `rgba(${cr},${cg},${cb},1)`,
           ];
         }}
-        pathStroke={(d: any) => (d.kind === "radar-ring" ? 2.5 : 2)}
-        pathDashLength={(d: any) => (d.kind === "radar-ring" ? 0 : 0)}
-        pathDashGap={0}
+        pathStroke={(d: any) => (d.kind === "radar-ring" ? 2.5 : 4)}
+        pathDashLength={(d: any) => (d.kind === "radar-ring" ? 0 : 0.12)}
+        pathDashGap={(d: any) => (d.kind === "radar-ring" ? 0 : 0.18)}
+        pathDashAnimateTime={0}
+        pathPointAlt={(p: any) => p[2] ?? 0.015}
         pathTransitionDuration={0}
         /* Radar sweep wedges (custom three.js layer) */
         customLayerData={radarSweeps}

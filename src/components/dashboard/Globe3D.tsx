@@ -225,9 +225,9 @@ export function Globe3D() {
         if (!a || a.history.length < 2) return null;
         const coords = [...a.history, { lat: a.lat, lng: a.lng }].map((p) => [p.lat, p.lng, 0.012]);
         const color = s.affiliation === "unfriendly" ? "#f0436b" : "#f0a93d";
-        return { coords, color, id: s.id };
+        return { kind: "ais" as const, coords, color, id: s.id, opacity: 1 };
       })
-      .filter(Boolean) as { coords: number[][]; color: string; id: string }[];
+      .filter(Boolean) as { kind: "ais"; coords: number[][]; color: string; id: string; opacity: number }[];
   }, [aisAnim, nodes.ais, visible.ais]);
 
 
@@ -239,8 +239,79 @@ export function Globe3D() {
     return parseFloat(m[1]) / 111;
   };
 
-  // 3 concurrent outward-propagating rings per sensor (transmission signal effect)
-  // Plus a radar sweep ring sized to the radar's km range (neon green).
+  // Generate points along a small-circle on the sphere centered at (lat0, lng0)
+  // with angular radius `angDeg` (degrees of arc).
+  const smallCircle = (lat0: number, lng0: number, angDeg: number, segs = 72): number[][] => {
+    const toRad = Math.PI / 180;
+    const toDeg = 180 / Math.PI;
+    const φ0 = lat0 * toRad;
+    const λ0 = lng0 * toRad;
+    const α = angDeg * toRad;
+    const pts: number[][] = [];
+    for (let i = 0; i <= segs; i++) {
+      const θ = (i / segs) * Math.PI * 2;
+      const φ = Math.asin(Math.sin(φ0) * Math.cos(α) + Math.cos(φ0) * Math.sin(α) * Math.cos(θ));
+      const λ = λ0 + Math.atan2(
+        Math.sin(θ) * Math.sin(α) * Math.cos(φ0),
+        Math.cos(α) - Math.sin(φ0) * Math.sin(φ)
+      );
+      pts.push([φ * toDeg, λ * toDeg, 0.005]);
+    }
+    return pts;
+  };
+
+  // Radar concentric ring paths (4 rings per radar, scaled to range)
+  const radarRingPaths = useMemo(() => {
+    if (!visible.radar) return [];
+    const out: { kind: "radar-ring"; coords: number[][]; color: string; opacity: number; id: string }[] = [];
+    points.forEach((p) => {
+      if (p.category !== "radar") return;
+      const deg = parseKmToDeg(p.range);
+      if (!deg || deg <= 0) return;
+      [0.25, 0.5, 0.75, 1.0].forEach((frac, i) => {
+        out.push({
+          kind: "radar-ring",
+          coords: smallCircle(p.lat, p.lng, deg * frac),
+          color: "#39ff14",
+          opacity: 0.35 + i * 0.12,
+          id: `${p.id}-ring-${i}`,
+        });
+      });
+    });
+    return out;
+  }, [points, visible.radar]);
+
+  const allPaths = useMemo(() => [...aisPaths, ...radarRingPaths], [aisPaths, radarRingPaths]);
+
+  // Rotating radar sweep wedges (custom three.js layer)
+  const radarSweeps = useMemo(() => {
+    if (!visible.radar) return [];
+    const out: { lat: number; lng: number; radiusUnits: number; id: string }[] = [];
+    points.forEach((p) => {
+      if (p.category !== "radar") return;
+      const deg = parseKmToDeg(p.range);
+      if (!deg || deg <= 0) return;
+      // GLOBE_RADIUS = 100; arc length on sphere ≈ 100 * angleRadians
+      const radiusUnits = 100 * deg * (Math.PI / 180);
+      out.push({ lat: p.lat, lng: p.lng, radiusUnits, id: p.id });
+    });
+    return out;
+  }, [points, visible.radar]);
+
+  // Per-frame rotation of sweep wedges
+  const sweepMeshesRef = useRef<THREE.Mesh[]>([]);
+  useEffect(() => {
+    let raf = 0;
+    const loop = () => {
+      sweepMeshesRef.current = sweepMeshesRef.current.filter((m) => m.parent);
+      sweepMeshesRef.current.forEach((m) => { m.rotation.z -= 0.03; });
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  // Outer expanding pulse rings (transmission signal effect) – per sensor
   const rings = useMemo(() => {
     const out: { lat: number; lng: number; maxR: number; propagationSpeed: number; repeatPeriod: number; color: string }[] = [];
     points.forEach((p) => {
@@ -248,20 +319,6 @@ export function Globe3D() {
       const speed = 2;
       const repeatPeriod = (maxR / speed) * 1000 / 3;
       out.push({ lat: p.lat, lng: p.lng, maxR, propagationSpeed: speed, repeatPeriod, color: p.color });
-
-      if (p.category === "radar") {
-        const deg = parseKmToDeg(p.range);
-        if (deg && deg > 0) {
-          // Neon green radar sweep sized to actual range
-          out.push({
-            lat: p.lat, lng: p.lng,
-            maxR: deg,
-            propagationSpeed: deg / 2, // ~2s sweep
-            repeatPeriod: 2000,
-            color: "#39ff14",
-          });
-        }
-      }
     });
     return out;
   }, [points]);

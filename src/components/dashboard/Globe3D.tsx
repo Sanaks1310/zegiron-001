@@ -525,7 +525,6 @@ export function Globe3D() {
         pathDashLength={(d: any) => (d.kind === "radar-ring" ? 0 : 0.12)}
         pathDashGap={(d: any) => (d.kind === "radar-ring" ? 0 : 0.18)}
         pathDashAnimateTime={0}
-        pathPointAlt={(p: any) => p[2] ?? 0.015}
         pathTransitionDuration={0}
         /* Radar sweep wedges (custom three.js layer) */
         customLayerData={radarSweeps}

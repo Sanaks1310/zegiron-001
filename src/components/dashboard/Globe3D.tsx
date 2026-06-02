@@ -499,26 +499,62 @@ export function Globe3D() {
         ringMaxRadius="maxR"
         ringPropagationSpeed="propagationSpeed"
         ringRepeatPeriod="repeatPeriod"
-        /* AIS movement trails (4 segments) */
-        pathsData={aisPaths}
+        /* AIS movement trails + radar concentric rings */
+        pathsData={allPaths}
         pathPoints={(d: any) => d.coords}
         pathPointLat={(p: any) => p[0]}
         pathPointLng={(p: any) => p[1]}
         pathPointAlt={(p: any) => p[2]}
         pathColor={(d: any) => {
+          if (d.kind === "radar-ring") {
+            return `rgba(57,255,20,${d.opacity})`;
+          }
           const hex = d.color.replace("#", "");
           const bigint = parseInt(hex, 16);
           const cr = (bigint >> 16) & 255;
           const cg = (bigint >> 8) & 255;
           const cb = bigint & 255;
-          // Fade tail → head
           return [
             `rgba(${cr},${cg},${cb},0.1)`,
             `rgba(${cr},${cg},${cb},0.95)`,
           ];
         }}
-        pathStroke={2}
-        pathTransitionDuration={1500}
+        pathStroke={(d: any) => (d.kind === "radar-ring" ? 0.6 : 2)}
+        pathTransitionDuration={0}
+        /* Radar sweep wedges (custom three.js layer) */
+        customLayerData={radarSweeps}
+        customThreeObject={(d: any) => {
+          const r = d.radiusUnits;
+          const geo = new THREE.CircleGeometry(r, 48, 0, Math.PI / 5);
+          // Fade the wedge from bright at center to transparent at the edge
+          const colors: number[] = [];
+          const pos = geo.attributes.position;
+          for (let i = 0; i < pos.count; i++) {
+            const x = pos.getX(i);
+            const y = pos.getY(i);
+            const dist = Math.sqrt(x * x + y * y);
+            const t = Math.min(1, dist / r);
+            const a = (1 - t) * 0.9;
+            colors.push(0.22, 1.0, 0.08, a);
+          }
+          geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 4));
+          const mat = new THREE.MeshBasicMaterial({
+            vertexColors: true,
+            transparent: true,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+          });
+          const mesh = new THREE.Mesh(geo, mat);
+          sweepMeshesRef.current.push(mesh);
+          return mesh;
+        }}
+        customThreeObjectUpdate={(obj: any, d: any) => {
+          // Position handled automatically; nothing per-update needed.
+        }}
+        customLayerLat={(d: any) => d.lat}
+        customLayerLng={(d: any) => d.lng}
+        customLayerAltitude={() => 0.004}
       />
     </div>
   );

@@ -273,7 +273,7 @@ export function Globe3D() {
           kind: "radar-ring",
           coords: smallCircle(p.lat, p.lng, deg * frac),
           color: "#39ff14",
-          opacity: 0.35 + i * 0.12,
+          opacity: i === 3 ? 1 : 0.75 + i * 0.05,
           id: `${p.id}-ring-${i}`,
         });
       });

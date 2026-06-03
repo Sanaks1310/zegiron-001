@@ -304,7 +304,7 @@ export function Globe3D() {
     let raf = 0;
     const loop = () => {
       sweepMeshesRef.current = sweepMeshesRef.current.filter((m) => m.parent);
-      sweepMeshesRef.current.forEach((m) => { m.rotation.z -= 0.03; });
+      sweepMeshesRef.current.forEach((m) => { m.rotation.z += 0.03; });
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);

@@ -530,16 +530,27 @@ export function Globe3D() {
         customLayerData={radarSweeps}
         customThreeObject={(d: any) => {
           const r = d.radiusUnits;
-          const geo = new THREE.CircleGeometry(r, 48, 0, Math.PI / 5);
-          // Fade the wedge from bright at center to transparent at the edge
+          const sweepAngle = Math.PI * 0.6; // ~108° trailing arc
+          const segments = 96;
+          const geo = new THREE.CircleGeometry(r, segments, 0, sweepAngle);
+          // Classic radar beam: bright at the leading edge, fading along the trailing arc
           const colors: number[] = [];
           const pos = geo.attributes.position;
           for (let i = 0; i < pos.count; i++) {
             const x = pos.getX(i);
             const y = pos.getY(i);
             const dist = Math.sqrt(x * x + y * y);
-            const t = Math.min(1, dist / r);
-            const a = (1 - t) * 0.9;
+            // Center vertex
+            if (dist < 1e-4) {
+              colors.push(0.4, 1.0, 0.2, 0.95);
+              continue;
+            }
+            const ang = Math.atan2(y, x); // 0..sweepAngle for arc verts
+            const tAng = Math.min(1, Math.max(0, ang / sweepAngle));
+            // Leading edge (ang = 0) bright, trailing edge (ang = sweepAngle) transparent
+            const angAlpha = Math.pow(1 - tAng, 1.6);
+            const radAlpha = 1 - 0.15 * (dist / r); // slight radial falloff
+            const a = angAlpha * radAlpha * 0.95;
             colors.push(0.22, 1.0, 0.08, a);
           }
           geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 4));

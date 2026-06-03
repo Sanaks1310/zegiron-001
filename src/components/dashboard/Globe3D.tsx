@@ -530,47 +530,31 @@ export function Globe3D() {
         customLayerData={radarSweeps}
         customThreeObject={(d: any) => {
           const r = d.radiusUnits;
-          const sweepAngle = Math.PI * 0.6; // ~108° trailing arc
-          const segments = 96;
-          const geo = new THREE.CircleGeometry(r, segments, 0, sweepAngle);
-          // Classic radar beam: bright at the leading edge, fading along the trailing arc
-          const colors: number[] = [];
-          const pos = geo.attributes.position;
-          for (let i = 0; i < pos.count; i++) {
-            const x = pos.getX(i);
-            const y = pos.getY(i);
-            const dist = Math.sqrt(x * x + y * y);
-            // Center vertex
-            if (dist < 1e-4) {
-              colors.push(0.4, 1.0, 0.2, 0.95);
-              continue;
-            }
-            const ang = Math.atan2(y, x); // 0..sweepAngle for arc verts
-            const tAng = Math.min(1, Math.max(0, ang / sweepAngle));
-            // Leading edge (ang = 0) bright, trailing edge (ang = sweepAngle) transparent
-            const angAlpha = Math.pow(1 - tAng, 1.6);
-            const radAlpha = 1 - 0.15 * (dist / r); // slight radial falloff
-            const a = angAlpha * radAlpha * 0.95;
-            colors.push(0.22, 1.0, 0.08, a);
-          }
-          geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 4));
-          const mat = new THREE.MeshBasicMaterial({
+          // A bright radius line from the center to the edge of the radar circle
+          const geo = new THREE.BufferGeometry();
+          const positions = new Float32Array([0, 0, 0, r, 0, 0]);
+          const colors = new Float32Array([
+            0.4, 1.0, 0.2, 1.0, // center: bright
+            0.2, 1.0, 0.1, 0.0, // edge: transparent for soft tip
+          ]);
+          geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+          geo.setAttribute("color", new THREE.BufferAttribute(colors, 4));
+          const mat = new THREE.LineBasicMaterial({
             vertexColors: true,
             transparent: true,
-            side: THREE.DoubleSide,
             depthWrite: false,
             blending: THREE.AdditiveBlending,
+            linewidth: 2,
           });
-          const mesh = new THREE.Mesh(geo, mat);
-          sweepMeshesRef.current.push(mesh);
-          return mesh;
+          const line = new THREE.Line(geo, mat);
+          sweepMeshesRef.current.push(line as unknown as THREE.Mesh);
+          return line;
         }}
         customThreeObjectUpdate={(obj: any, d: any) => {
           const g = globeRef.current;
           if (!g) return;
           const { x, y, z } = (g as any).getCoords(d.lat, d.lng, 0.004);
           obj.position.set(x, y, z);
-          // Orient the wedge tangent to the globe surface (lookAt origin from outside)
           obj.lookAt(0, 0, 0);
         }}
       />
